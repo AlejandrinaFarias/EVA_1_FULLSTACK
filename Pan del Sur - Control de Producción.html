@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<!-- saved from url=(0014)about:internet -->
+<html lang="es"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pan del Sur - Control de Producción</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f7fa;
+            color: #1e2a3a;
+            line-height: 1.6;
+            padding: 2rem 1rem;
+        }
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            padding: 2rem 2.5rem;
+        }
+        h1, h2, h3, h4 {
+            margin-top: 1.8rem;
+            margin-bottom: 0.8rem;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+        }
+        h1 {
+            font-size: 2.2rem;
+            border-bottom: 3px solid #1e2a3a;
+            padding-bottom: 0.5rem;
+            margin-top: 0;
+        }
+        h2 {
+            font-size: 1.6rem;
+            border-bottom: 1px solid #d0d7e2;
+            padding-bottom: 0.3rem;
+        }
+        h3 {
+            font-size: 1.3rem;
+            margin-top: 1.5rem;
+        }
+        h4 {
+            font-size: 1.1rem;
+            margin-top: 1.2rem;
+            font-weight: 600;
+        }
+        p {
+            margin-bottom: 1rem;
+        }
+        ul, ol {
+            padding-left: 1.8rem;
+            margin-bottom: 1.2rem;
+        }
+        li {
+            margin-bottom: 0.4rem;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.2rem 0 2rem 0;
+            font-size: 0.95rem;
+        }
+        th {
+            background-color: #eef2f7;
+            font-weight: 600;
+            text-align: left;
+            padding: 0.7rem 0.8rem;
+            border: 1px solid #d0d7e2;
+        }
+        td {
+            padding: 0.7rem 0.8rem;
+            border: 1px solid #d0d7e2;
+            vertical-align: top;
+        }
+        .role-table td:first-child {
+            font-weight: 600;
+        }
+        hr {
+            border: none;
+            border-top: 2px solid #e2e8f0;
+            margin: 2rem 0;
+        }
+        .footer-note {
+            margin-top: 2.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid #e2e8f0;
+            font-size: 0.95rem;
+            color: #4a5a6e;
+        }
+        code {
+            background-color: #f0f2f5;
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-size: 0.9rem;
+        }
+        @media (max-width: 768px) {
+            .container {
+                padding: 1.2rem 1.2rem;
+            }
+            h1 {
+                font-size: 1.8rem;
+            }
+            table {
+                font-size: 0.85rem;
+            }
+            th, td {
+                padding: 0.4rem 0.5rem;
+            }
+        }
+        @media (max-width: 480px) {
+            body {
+                padding: 1rem 0.5rem;
+            }
+            .container {
+                padding: 1rem 0.8rem;
+                border-radius: 4px;
+            }
+            h1 {
+                font-size: 1.5rem;
+            }
+            h2 {
+                font-size: 1.3rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <h1>Pan del Sur - Control de Producción</h1>
+
+    <h2>1. Presentación de la empresa</h2>
+    <p><strong>Pan del Sur</strong> es una panadería industrial con más de 20 años de experiencia, ubicada en la comuna de San Bernardo, Región Metropolitana. La empresa produce un promedio de 15,000 unidades de pan y pastelería al día, distribuyendo a más de 200 clientes en la Región Metropolitana.</p>
+    <p>El equipo está compuesto por 25 operarios de producción, 5 supervisores de línea, 2 técnicos de control de calidad, 1 jefe de calidad, 1 jefe de producción y 1 administrador.</p>
+    <p>En los últimos tres años, la demanda ha crecido un 40%, lo que ha tensionado el sistema manual de control de producción y calidad. Actualmente, Pan del Sur utiliza registros en papel y planillas Excel para gestionar las órdenes de producción, el control de calidad de los productos, la trazabilidad de ingredientes y los tiempos de fabricación. Esto ha provocado productos defectuosos, pérdida de ingredientes y una baja eficiencia en la producción. La panadería necesita un sistema digital que le permita optimizar su control de producción y mejorar la calidad de sus productos.</p>
+
+    <h2>2. Actores involucrados</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Actor</th>
+                <th>Rol en el proceso</th>
+                <th>Relación con el sistema actual</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>Cliente</strong></td>
+                <td>Empresa que compra productos de panadería.</td>
+                <td>Recibe los productos sin trazabilidad digital. No tiene visibilidad de la calidad.</td>
+            </tr>
+            <tr>
+                <td><strong>Operario de Producción</strong></td>
+                <td>Realiza las tareas de fabricación de pan y pastelería.</td>
+                <td>Recibe instrucciones verbales y reporta novedades al supervisor.</td>
+            </tr>
+            <tr>
+                <td><strong>Supervisor de Línea</strong></td>
+                <td>Coordina la producción en cada línea de fabricación.</td>
+                <td>Registra la producción y los controles básicos en planillas Excel.</td>
+            </tr>
+            <tr>
+                <td><strong>Técnico de Control de Calidad</strong></td>
+                <td>Realiza inspecciones de calidad de los productos.</td>
+                <td>Registra los resultados de inspección en papel y reporta desviaciones manualmente.</td>
+            </tr>
+            <tr>
+                <td><strong>Jefe de Calidad</strong></td>
+                <td>Supervisa el sistema de control de calidad y la trazabilidad.</td>
+                <td>Consolida los reportes de calidad en Excel y toma decisiones correctivas.</td>
+            </tr>
+            <tr>
+                <td><strong>Administrador</strong></td>
+                <td>Gestiona las finanzas, costos y toma decisiones estratégicas.</td>
+                <td>Recibe reportes de calidad y producción de forma manual, consolidando la información en Excel.</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2>3. Descripción de la problemática</h2>
+    <p>A continuación, se describe cómo funciona el proceso HOY, con sus pasos y dificultades.</p>
+
+    <h3>3.1 Proceso actual de control de producción</h3>
+    <ol>
+        <li>El jefe de producción genera una orden de producción en papel basándose en los pedidos de clientes.</li>
+        <li>El supervisor de línea asigna tareas a los operarios y registra la producción en Excel.</li>
+        <li>Los operarios producen el pan y reportan el avance al supervisor.</li>
+        <li>No existe un registro digital de la producción, lo que dificulta el seguimiento y la consulta de lotes anteriores.</li>
+    </ol>
+
+    <h3>3.2 Proceso actual de control de calidad y trazabilidad</h3>
+    <ol>
+        <li>El técnico de control de calidad inspecciona los productos y registra los resultados en papel.</li>
+        <li>El técnico entrega los registros al jefe de calidad, quien consolida la información en Excel.</li>
+        <li>Los ingredientes se registran en Excel, pero no están sincronizados con la producción.</li>
+        <li>La falta de trazabilidad provoca que el 12% de los lotes con problemas no puedan ser identificados a tiempo.</li>
+    </ol>
+
+    <h3>3.3 Problemas concretos del proceso actual</h3>
+    <ul>
+        <li><strong>Productos defectuosos:</strong> El 7% de los productos presentan defectos que generan devoluciones por parte de los clientes.</li>
+        <li><strong>Pérdida de ingredientes:</strong> El 10% de los ingredientes se pierden debido a errores en la planificación y control de la producción.</li>
+        <li><strong>Baja eficiencia en el control de calidad:</strong> El jefe de calidad dedica el 25% de su tiempo a tareas administrativas manuales.</li>
+        <li><strong>Incumplimiento de estándares:</strong> La falta de un sistema digital dificulta el cumplimiento de los estándares de calidad, lo que ha generado 2 observaciones en auditorías.</li>
+        <li><strong>Reportes manuales:</strong> El administrador no puede generar reportes automáticos de producción, calidad o eficiencia, lo que dificulta la toma de decisiones.</li>
+    </ul>
+
+    <h2>4. Resultados esperados (visión general)</h2>
+    <ul>
+        <li><strong>Técnicos de control de calidad</strong> puedan registrar inspecciones de calidad digitalmente, con actualización instantánea del sistema.</li>
+        <li><strong>Jefe de calidad</strong> pueda gestionar la trazabilidad de los lotes de forma digital, identificando productos y ingredientes en tiempo real.</li>
+        <li><strong>Supervisores de línea</strong> puedan consultar los resultados de calidad de los lotes en tiempo real, tomando acciones correctivas de forma inmediata.</li>
+        <li><strong>Jefe de producción</strong> pueda gestionar las órdenes de producción de forma visual, optimizando la asignación de recursos y tiempos.</li>
+        <li><strong>Administrador</strong> pueda generar reportes automáticos de producción, calidad, eficiencia y costos, facilitando la toma de decisiones.</li>
+    </ul>
+
+    <h2>5. Restricciones o condiciones del contexto</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Tipo de restricción</th>
+                <th>Descripción</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>Usuarios no técnicos</strong></td>
+                <td>Los operarios y supervisores tienen un nivel básico de manejo de tecnología. La interfaz debe ser simple, con botones grandes y texto claro.</td>
+            </tr>
+            <tr>
+                <td><strong>Dispositivos disponibles</strong></td>
+                <td>El jefe de calidad usa un computador de escritorio en la oficina. Los técnicos de calidad disponen de tablets para registrar inspecciones. Los supervisores tienen smartphones.</td>
+            </tr>
+            <tr>
+                <td><strong>Conectividad</strong></td>
+                <td>La fábrica tiene WiFi estable. Los técnicos y supervisores cuentan con datos móviles para acceder al sistema desde la planta. Se requiere que la aplicación funcione bien en dispositivos móviles.</td>
+            </tr>
+            <tr>
+                <td><strong>Privacidad</strong></td>
+                <td>Los datos de producción y calidad son confidenciales. Solo el personal autorizado puede acceder a la información.</td>
+            </tr>
+            <tr>
+                <td><strong>Motor de base de datos</strong></td>
+                <td>Sin preferencia. El equipo puede elegir el que mejor se adapte a su proyecto (ej. MySQL, PostgreSQL).</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <hr>
+
+    <h2>Información de Contexto Adicional</h2>
+    <p><em>Nota: Esta información puede ser utilizada para poblar bases de datos iniciales o para diseñar las interfaces.</em></p>
+
+    <h3>1. Catálogo de Productos</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Código</th>
+                <th>Nombre</th>
+                <th>Categoría</th>
+                <th>Tiempo producción (min)</th>
+                <th>Precio (CLP)</th>
+                <th>Stock actual</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr><td>PR001</td><td>Pan amasado</td><td>Pan</td><td>60</td><td>1.500</td><td>2.500</td></tr>
+            <tr><td>PR002</td><td>Pan de molde</td><td>Pan</td><td>45</td><td>2.200</td><td>1.800</td></tr>
+            <tr><td>PR003</td><td>Marraqueta</td><td>Pan</td><td>40</td><td>1.200</td><td>3.000</td></tr>
+            <tr><td>PR004</td><td>Hallulla</td><td>Pan</td><td>35</td><td>1.000</td><td>2.800</td></tr>
+            <tr><td>PR005</td><td>Pastel de manzana</td><td>Pastelería</td><td>90</td><td>6.500</td><td>400</td></tr>
+            <tr><td>PR006</td><td>Queque de vainilla</td><td>Pastelería</td><td>75</td><td>5.500</td><td>350</td></tr>
+        </tbody>
+    </table>
+
+    <h3>2. Parámetros de Calidad</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Código</th>
+                <th>Parámetro</th>
+                <th>Producto</th>
+                <th>Rango aceptable</th>
+                <th>Unidad</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr><td>CAL001</td><td>Peso</td><td>Pan</td><td>± 5%</td><td>gramos</td></tr>
+            <tr><td>CAL002</td><td>Humedad</td><td>Pan</td><td>35 - 40</td><td>%</td></tr>
+            <tr><td>CAL003</td><td>Color de corteza</td><td>Pan</td><td>Dorado uniforme</td><td>Escala visual</td></tr>
+            <tr><td>CAL004</td><td>Textura</td><td>Pastelería</td><td>Esponjoso</td><td>Escala visual</td></tr>
+            <tr><td>CAL005</td><td>Sabor</td><td>Todos</td><td>Característico</td><td>Evaluación sensorial</td></tr>
+        </tbody>
+    </table>
+
+    <h3>3. Ejemplo de Flujo de Control de Producción</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Estado</th>
+                <th>Descripción</th>
+                <th>Acciones posibles</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>Programado</strong></td>
+                <td>La orden de producción ha sido programada.</td>
+                <td>Ver detalles de la orden.</td>
+            </tr>
+            <tr>
+                <td><strong>En producción</strong></td>
+                <td>El producto está siendo fabricado.</td>
+                <td>Ver avance de producción.</td>
+            </tr>
+            <tr>
+                <td><strong>En control de calidad</strong></td>
+                <td>El producto está siendo inspeccionado por calidad.</td>
+                <td>Ver resultados de inspección.</td>
+            </tr>
+            <tr>
+                <td><strong>Conforme</strong></td>
+                <td>El producto cumple con todos los parámetros de calidad.</td>
+                <td>Ver resultados, liberar lote.</td>
+            </tr>
+            <tr>
+                <td><strong>No conforme</strong></td>
+                <td>El producto no cumple con los parámetros de calidad.</td>
+                <td>Ver desviaciones, tomar acciones correctivas.</td>
+            </tr>
+        </tbody>
+    </table>
+
+</div>
+
+
+</body></html>
