@@ -1,0 +1,215 @@
+/* Color base de pan y tipografía limpia para usuarios no técnicos */
+:root {
+  --bg-pan: #ffe9d6;
+  --corteza-cobre: #faa070;
+  --cafe-oscuro: #ce5346;
+  --verde-exito: #2E7D32;
+  --alerta-naranja: #EF6C00;
+  --blanco: #FFFFFF;
+}
+
+body {
+  background-color: var(--bg-pan);
+  color: var(--cafe-oscuro);
+  font-family: system-ui, -apple-system, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+/* Encabezado */
+.main-header {
+  background-color: var(--corteza-cobre);
+  color: var(--blanco);
+  text-align: center;
+  padding: 1rem;
+}
+
+.main-header h1 {
+  margin: 0;
+  font-size: 1.8rem;
+}
+
+/* Navegación con botones grandes para pantallas táctiles */
+.main-nav {
+  background-color: var(--cafe-oscuro);
+}
+
+.main-nav ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.main-nav a {
+  display: block;
+  color: var(--blanco);
+  padding: 15px 20px;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.main-nav a:hover, .main-nav a.active {
+  background-color: var(--corteza-cobre);
+}
+
+/* Contenedor principal */
+.container {
+  max-width: 1000px;
+  margin: 20px auto;
+  padding: 0 15px;
+}
+
+/* Contenedores blancos estilo tarjeta */
+.dashboard-summary, .form-section {
+  background: var(--blanco);
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  margin-bottom: 25px;
+}
+
+/* Tablas responsivas */
+.table-container {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+th, td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+th {
+  background-color: #f2f2f2;
+}
+
+/* Badges de Estado */
+.badge {
+  padding: 5px 10px;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  color: white;
+  font-weight: bold;
+}
+
+.status-ok { background-color: var(--verde-exito); }
+.status-progress { background-color: #0288D1; }
+.status-review { background-color: var(--alerta-naranja); }
+
+/* Formularios de fácil interacción (para tablets y móviles) */
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+.form-group select, .btn-primary {
+  width: 100%;
+  padding: 12px;
+  font-size: 1rem;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+/* Botón prominente de fácil pulsación */
+.btn-primary {
+  background-color: var(--corteza-cobre);
+  color: var(--blanco);
+  border: none;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.btn-primary:hover {
+  background-color: var(--cafe-oscuro);
+}
+
+footer {
+  text-align: center;
+  padding: 20px;
+  font-size: 0.9rem;
+}
+
+
+/* Tarjetas del resumen */
+
+.summary-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+}
+
+.summary-card {
+    background-color: #f2f2f2;
+    padding: 15px;
+    border-radius: 8px;
+    text-align: center;
+}
+
+.summary-card h3 {
+    font-size: 2rem;
+    margin: 5px 0;
+}
+
+
+/* Campos de texto */
+
+.form-group input,
+.form-group textarea {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 12px;
+    font-size: 1rem;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    font-family: inherit;
+}
+
+.form-group small {
+    display: block;
+    margin-bottom: 5px;
+    color: #666;
+}
+
+
+/* Resultado */
+
+.result-box {
+    background-color: #f5f5f5;
+    padding: 15px;
+    border-radius: 8px;
+    margin-top: 20px;
+    margin-bottom: 10px;
+}
+
+.result-box h3 {
+    margin-top: 0;
+}
+
+
+/* Responsive para tablets y celulares */
+
+@media (max-width: 700px) {
+
+    .summary-grid {
+        grid-template-columns: 1fr;
+    }
+
+    table {
+        min-width: 700px;
+    }
+
+}

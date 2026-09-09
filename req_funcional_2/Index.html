@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pan del Sur - Control de Producción</title>
+  <link rel="stylesheet" href="Style.css">
+</head>
+<body>
+
+  <!-- Encabezado de la Aplicación -->
+  <header class="main-header">
+    <h1>Pan del Sur</h1>
+    <p>Sistema de Control de Producción y Calidad</p>
+  </header>
+
+  <!-- Navegación Principal -->
+  <nav class="main-nav">
+    <ul>
+      <li><a href="#" class="active">Órdenes</a></li>
+      <li><a href="#">Control de Calidad</a></li>
+      <li><a href="#">Trazabilidad</a></li>
+      <li><a href="#">Reportes</a></li>
+    </ul>
+  </nav>
+
+  <!-- Contenido Principal -->
+  <main class="container">
+
+    <!-- Panel de Estado / Resumen -->
+    <section class="dashboard-summary">
+      <h2>Catálogo de Productos y Producción</h2>
+      
+      <!-- Tabla adaptable para móviles/tablets -->
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Código</th>
+              <th>Producto</th>
+              <th>Categoría</th>
+              <th>Tiempo (min)</th>
+              <th>Precio (CLP)</th>
+              <th>Stock</th>
+              <th>Estado</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>PR001</td>
+              <td><strong>Pan amasado</strong></td>
+              <td>Pan</td>
+              <td>60</td>
+              <td>$1.500</td>
+              <td>2.500</td>
+              <td><span class="badge status-ok">Conforme</span></td>
+            </tr>
+            <tr>
+              <td>PR002</td>
+              <td><strong>Pan de molde</strong></td>
+              <td>Pan</td>
+              <td>45</td>
+              <td>$2.200</td>
+              <td>1.800</td>
+              <td><span class="badge status-progress">En producción</span></td>
+            </tr>
+            <tr>
+              <td>PR003</td>
+              <td><strong>Marraqueta</strong></td>
+              <td>Pan</td>
+              <td>40</td>
+              <td>$1.200</td>
+              <td>3.000</td>
+              <td><span class="badge status-review">En control</span></td>
+            </tr>
+            <tr>
+              <td>PR004</td>
+              <td><strong>Hallulla</strong></td>
+              <td>Pan</td>
+              <td>35</td>
+              <td>$1.000</td>
+              <td>2.800</td>
+              <td><span class="badge status-ok">Conforme</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Formulario para Registro de Control de Calidad (Para Tablets/Smartphones) -->
+    <section class="form-section">
+      <h2>Registro de Inspección de Calidad</h2>
+      <form>
+        <div class="form-group">
+          <label for="producto">Seleccionar Producto:</label>
+          <select id="producto" name="producto">
+            <option value="PR001">PR001 - Pan amasado</option>
+            <option value="PR002">PR002 - Pan de molde</option>
+            <option value="PR003">PR003 - Marraqueta</option>
+            <option value="PR004">PR004 - Hallulla</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="parametro">Parámetro Evaluado:</label>
+          <select id="parametro" name="parametro">
+            <option value="CAL001">Peso (± 5% g)</option>
+            <option value="CAL002">Humedad (35 - 40%)</option>
+            <option value="CAL003">Color de corteza (Dorado)</option>
+            <option value="CAL005">Sabor (Característico)</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="resultado">Resultado de Inspección:</label>
+          <select id="resultado" name="resultado">
+            <option value="conforme">Conforme</option>
+            <option value="no-conforme">No Conforme</option>
+          </select>
+        </div>
+
+        <button type="submit" class="btn-primary">Registrar Inspección</button>
+      </form>
+    </section>
+
+  </main>
+
+  <!-- Pie de página -->
+  <footer>
+    <p>&copy; 2026 Pan del Sur - San Bernardo, RM. Todos los derechos reservados.</p>
+  </footer>
+
+</body>
+</html>
