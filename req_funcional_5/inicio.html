@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pan del Sur - Inicio</title>
+    <link rel="stylesheet" href="Style.css">
+</head>
+<body>
+
+    <header class="main-header">
+        <h1>Pan del Sur </h1>
+        <p>Porque nada entrega más satisfacción que el pan fresco recién horneado</p>
+    </header>
+
+    <!-- Navegación -->
+    <nav class="main-nav">
+        <ul>
+            <li><a href="index.html" class="active">Inicio</a></li>
+            <li><a href="#">Órdenes de Producción</a></li>
+            <li><a href="#">Control de Calidad</a></li>
+            <li><a href="#">Lotes/Trazabilidad</a></li>
+            <li><a href="#">Productos e Ingredientes</a></li>
+            <li><a href="#">Reportes</a></li>
+        </ul>
+    </nav>
+
+    <!-- Contenido Principal -->
+    <main class="container">
+
+        <!-- Historia de la Empresa -->
+        <section class="dashboard-summary">
+            <h2>Nuestra Historia</h2>
+            <p>Desde hace más de <strong>20 años</strong>, en <strong>Pan del Sur</strong> trabajamos con pasión para llevar la magia del pan artesanal a miles de familias y locales. Con base en San Bernardo, producimos más de 15.000 unidades diarias combinando tradición, sabor e innovación digital en cada horneada.</p>
+        </section>
+
+        <!-- Tiendas y Sucursales -->
+        <section class="dashboard-summary">
+            <h2>Tiendas y Sucursales</h2>
+            <p>Conoce nuestras plantas y puntos de distribución:</p>
+            <ul>
+                <li><strong>Planta Central San Bernardo:</strong> Av. Industrial 1200, San Bernardo.</li>
+                <li><strong>Sucursal Santiago Centro:</strong> Av. Matta 450, Santiago.</li>
+                <li><strong>Sucursal Providencia:</strong> Av. Holanda 123, Providencia.</li>
+            </ul>
+        </section>
+
+        <!-- Catálogo de Panes con Cálculo de Precios -->
+        <section class="dashboard-summary">
+            <h2>Catálogo de Productos y Cotizador</h2>
+            <p>Ingresa la cantidad que deseas pedir para ver el costo total estimado:</p>
+
+            <div class="summary-grid">
+                
+                <!-- Producto 1 -->
+                <div class="summary-card">
+                    <h3>Pan Amasado</h3>
+                    <p><span class="badge status-ok">PR001</span></p>
+                    <p>Precio: <strong>$1.500 CLP / Kg</strong></p>
+                    
+                    <div class="form-group">
+                        <label for="cant-pr001"><small>Cantidad (Kg):</small></label>
+                        <input type="number" id="cant-pr001" value="1" min="1" oninput="calcularTotal('pr001', 1500)">
+                    </div>
+
+                    <div class="result-box">
+                        <small>Total estimado:</small>
+                        <h3 id="total-pr001">$1.500 CLP</h3>
+                    </div>
+
+                    <button class="btn-primary">Pedir Orden</button>
+                </div>
+
+                <!-- Producto 2 -->
+                <div class="summary-card">
+                    <h3>Pan de Molde</h3>
+                    <p><span class="badge status-ok">PR002</span></p>
+                    <p>Precio: <strong>$2.200 CLP / Un</strong></p>
+                    
+                    <div class="form-group">
+                        <label for="cant-pr002"><small>Cantidad (Un):</small></label>
+                        <input type="number" id="cant-pr002" value="1" min="1" oninput="calcularTotal('pr002', 2200)">
+                    </div>
+
+                    <div class="result-box">
+                        <small>Total estimado:</small>
+                        <h3 id="total-pr002">$2.200 CLP</h3>
+                    </div>
+
+                    <button class="btn-primary">Pedir Orden</button>
+                </div>
+
+                <!-- Producto 3 -->
+                <div class="summary-card">
+                    <h3>Marraqueta</h3>
+                    <p><span class="badge status-ok">PR003</span></p>
+                    <p>Precio: <strong>$1.200 CLP / Kg</strong></p>
+                    
+                    <div class="form-group">
+                        <label for="cant-pr003"><small>Cantidad (Kg):</small></label>
+                        <input type="number" id="cant-pr003" value="1" min="1" oninput="calcularTotal('pr003', 1200)">
+                    </div>
+
+                    <div class="result-box">
+                        <small>Total estimado:</small>
+                        <h3 id="total-pr003">$1.200 CLP</h3>
+                    </div>
+
+                    <button class="btn-primary">Pedir Orden</button>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Servicios -->
+        <section class="dashboard-summary">
+            <h2>Nuestros Servicios</h2>
+            <ul>
+                <li>Envío diario y trazabilidad asegurada a locales comerciales en la Región Metropolitana.</li>
+                <li>Inspección y control de calidad bajo normas de inocuidad alimentaria.</li>
+                <li>Devolución garantizada en caso de lote no conforme.</li>
+            </ul>
+        </section>
+
+    </main>
+
+    <!-- Pie de página -->
+    <footer>
+        <p>&copy; 2026 <strong>Pan del Sur</strong> · Hecho con calidad y tradición</p>
+    </footer>
+
+    
+    <script src="script.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pan del Sur - Control de Lotes y Trazabilidad</title>
+  <!-- Vinculación a tu archivo de estilos CSS -->
+  <link rel="stylesheet" href="Style.css">
+</head>
+<body>
+
+  <!-- Encabezado Principal -->
+  <header class="main-header">
+    <h1>Pan del Sur - Control de Producción</h1>
+  </header>
+
+  <!-- Navegación con Botones Grandes (Apto Touch/Tablets) -->
+  <nav class="main-nav">
+    <ul>
+      <li><a href="#">Inicio</a></li>
+      <li><a href="#">Órdenes</a></li>
+      <li><a href="#" class="active">Lotes y Trazabilidad</a></li>
+      <li><a href="#">Control Calidad</a></li>
+      <li><a href="#">Reportes</a></li>
+    </ul>
+  </nav>
+
+  <!-- Contenedor Principal -->
+  <main class="container">
+
+    <!-- Sección 1: Buscador / Filtro de Lotes -->
+    <section class="form-section">
+      <h2>Búsqueda y Trazabilidad de Lotes</h2>
+      <div class="form-group">
+        <label for="buscar-lote">Ingresar o escanear código de Lote o Insumo:</label>
+        <input 
+          type="text" 
+          id="buscar-lote" 
+          placeholder="Ej: LOT-20261012-001 o HAR-20260920-A"
+          autocomplete="off"
+        >
+        <small>Puedes buscar un lote de pan fabricado o un lote de materia prima (harina, levadura, etc.).</small>
+      </div>
+      <button type="button" class="btn-primary">🔍 Buscar Lote</button>
+    </section>
+
+    <!-- Sección 2: Resumen General del Lote Seleccionado -->
+    <section class="dashboard-summary">
+      <h2 id="titulo-lote">Ficha del Lote: LOT-20261012-001</h2>
+      <div class="summary-grid">
+        <div class="summary-card">
+          <small>Producto / Cantidad</small>
+          <h3 id="card-producto">PR001</h3>
+          <p>Pan Amasado (2.500 un.)</p>
+        </div>
+        <div class="summary-card">
+          <small>Estado de Calidad</small>
+          <br>
+          <span class="badge status-ok" style="font-size: 1.1rem; display: inline-block; margin-top: 10px;">CONFORME</span>
+        </div>
+        <div class="summary-card">
+          <small>Fecha / Hora Elaboración</small>
+          <h3 id="card-fecha">12/10</h3>
+          <p>06:30 hrs - Línea 2</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Sección 3: Trazabilidad Hacia Atrás (Insumos e Ingredientes) -->
+    <section class="dashboard-summary">
+      <h2>1. Insumos Utilizados (Trazabilidad Hacia Atrás)</h2>
+      <p>Mapeo de materias primas e ingredientes utilizados en la masa de este lote:</p>
+      
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Insumo</th>
+              <th>Código Lote Insumo</th>
+              <th>Proveedor</th>
+              <th>Cantidad Usada</th>
+              <th>Fecha Vencimiento</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Harina Extra Pan</strong></td>
+              <td>HAR-20260920-A</td>
+              <td>Molinos del Centro</td>
+              <td>150 kg</td>
+              <td>20/03/2027</td>
+            </tr>
+            <tr>
+              <td><strong>Levadura Fresca</strong></td>
+              <td>LEV-20261001-B</td>
+              <td>Levaduras Chile</td>
+              <td>5 kg</td>
+              <td>25/11/2026</td>
+            </tr>
+            <tr>
+              <td><strong>Sal Industrial</strong></td>
+              <td>SAL-20260815-01</td>
+              <td>Salinas Sur</td>
+              <td>2.5 kg</td>
+              <td>15/08/2028</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Sección 4: Inspecciones de Calidad Registradas -->
+    <section class="dashboard-summary">
+      <h2>2. Parámetros de Control de Calidad</h2>
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Parámetro</th>
+              <th>Rango Aceptable</th>
+              <th>Valor Medido</th>
+              <th>Resultado</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>CAL001 - Peso (g)</td>
+              <td>± 5% (475g - 525g)</td>
+              <td>502 g</td>
+              <td><span class="badge status-ok">OK</span></td>
+            </tr>
+            <tr>
+              <td>CAL002 - Humedad (%)</td>
+              <td>35% - 40%</td>
+              <td>37.5%</td>
+              <td><span class="badge status-ok">OK</span></td>
+            </tr>
+            <tr>
+              <td>CAL003 - Color de Corteza</td>
+              <td>Dorado uniforme</td>
+              <td>Dorado uniforme</td>
+              <td><span class="badge status-ok">OK</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      
+      <div class="result-box">
+        <h3>Detalles de la Inspección:</h3>
+        <p><strong>Técnico Responsable:</strong> Juan Pérez (Control de Calidad)</p>
+        <p><strong>Fecha/Hora Validación:</strong> 12/10/2026 - 07:15 hrs</p>
+      </div>
+    </section>
+
+    <!-- Sección 5: Trazabilidad Hacia Adelante (Despacho / Clientes) -->
+    <section class="dashboard-summary">
+      <h2>3. Distribución a Clientes (Trazabilidad Hacia Adelante)</h2>
+      <p>Clientes a los que se distribuyeron unidades de este lote específico:</p>
+      
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Cliente</th>
+              <th>N° Pedido / Guía</th>
+              <th>Cantidad Entregada</th>
+              <th>Hora Despacho</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Supermercados San Bernardo</td>
+              <td>PED-8840</td>
+              <td>1.000 un.</td>
+              <td>12/10/2026 10:00</td>
+            </tr>
+            <tr>
+              <td>Minimarket El Roble</td>
+              <td>PED-8842</td>
+              <td>500 un.</td>
+              <td>12/10/2026 11:30</td>
+            </tr>
+            <tr>
+              <td>Panadería Central</td>
+              <td>PED-8845</td>
+              <td>1.000 un.</td>
+              <td>12/10/2026 12:15</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Pie de página -->
+  <footer>
+    <p>Pan del Sur S.A. &copy; 2026 - Sistema Digital de Control de Producción y Calidad</p>
+  </footer>
+
+  <!-- Vinculación a tu archivo JavaScript -->
+  <script src="script.js"></script>
+</body>
+</html>
