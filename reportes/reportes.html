@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="es">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Pan del Sur - Reportes</title>
+        <link rel="stylesheet" href="/Style.css">
+    </head>
+    <body>
+        <header class="main-header">
+            <div class="header-content">
+                <img src="/logo_pan_sur.png" alt="Logo Pan del Sur" class="logo-header">
+                <div>
+                    <h1>Pan del Sur</h1>
+                    <p>Sistema de Control de Producción y Calidad</p>
+                </div>
+            </div>
+        </header>
+
+        <nav class="main-nav">
+            <ul>
+                <li><a href="/inicio/inicio.html">Inicio</a></li>
+                <li><a href="/ordenes_prod/ordenes_produccion.html">Ordenes de Produccion</a></li>
+                <li><a href="/control_calidad/control_calidad.html">Control de Calidad</a></li>
+                <li><a href="/tranzabilidad/Tranzabilidad.html">Lotes/Trazabilidad</a></li>
+                <li><a href="/produ_ingre/prod_ing.html">Productos e Ingredientes</a></li>
+                <li><a href="/reportes/reportes.html" class="active">Reportes</a></li>
+            </ul>
+        </nav>
+
+        <main class="container">
+            <div class="table-container">
+                <section class="dashboard-summary">
+                    <h2>Panel de indicadores clave (KPIs)</h2>
+                    <div class="summary-grid">
+                        <div class="summary-card">
+                            <p>Produccion diaria</p>
+                            <h3 style="color: var(--exito-trigo);">14,580</h3>
+                            <small>Unidades hoy (Meta: 15.000)</small>
+                        </div>
+                        <div class="summary-card">
+                            <p>Productos defectuosos</p>
+                            <h3 style="color: var(--cafe-oscuro);">6.5%</h3>
+                            <small>Objetivo: < 5% </small>
+                        </div>
+                        <div class="summary-card">
+                            <p>Perdida de ingredientes</p>
+                            <h3 style="color: var(--alerta-nuez);">8.2%</h3>
+                            <small>Reduccion vs mes pasado</small>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="form-section">
+                    <h2>Generar Reporte Personalizado</h2>
+                    <form id="form-reporte">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                            <div class="form-group">
+                                <label for="fecha-inicio">Fecha de Inicio:</label>
+                                <input type="date" id="fecha-inicio" value="2026-09-01">
+                            </div>
+                            <div class="form-group">
+                                <label for="fecha-fin">Fecha de Término:</label>
+                                <input type="date" id="fecha-fin" value="2026-09-09">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="tipo-reporte">Tipo de Reporte:</label>
+                            <select id="tipo-reporte">
+                                <option value="produccion">Reporte General de Producción y Eficiencia</option>
+                                <option value="calidad">Reporte de Calidad y Desviaciones de Lotes</option>
+                                <option value="costos">Reporte de Costos y Pérdida de Ingredientes</option>
+                            </select>
+                        </div>
+                        <button type="button" id="btn-generar" class="btn-primary">Generar y Descargar Reporte</button>
+                    </form>
+
+                    <div id="mensaje-reporte" class="result-box" style="display: none;"></div>
+                </section>
+
+                <div class="table-container">
+                    <section class="dashboard-summary">
+                        <h2>Últimos Lotes Registrados</h2>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>N° Lote</th>
+                                    <th>Producto</th>
+                                    <th>Cantidad</th>
+                                    <th>Estado de Calidad</th>
+                                    <th>Responsable</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>LOT-8901</td>
+                                    <td>Pan Amasado (PR001)</td>
+                                    <td>2,500 un.</td>
+                                    <td><span class="badge status-ok">Conforme</span></td>
+                                    <td>Carlos Pérez (Sup.)</td>
+                                </tr>
+                                <tr>
+                                    <td>LOT-8902</td>
+                                    <td>Marraqueta (PR003)</td>
+                                    <td>3,000 un.</td>
+                                    <td><span class="badge status-ok">Conforme</span></td>
+                                    <td>Ana Gómez (Sup.)</td>
+                                </tr>
+                                <tr>
+                                    <td>LOT-8903</td>
+                                    <td>Pastel de Manzana (PR005)</td>
+                                    <td>400 un.</td>
+                                    <td><span class="badge status-review">No Conforme (Revisión)</span></td>
+                                    <td>Luis Soto (Tec. Calidad)</td>
+                                </tr>
+                                <tr>
+                                    <td>LOT-8904</td>
+                                    <td>Pan de Molde (PR002)</td>
+                                    <td>1,800 un.</td>
+                                    <td><span class="badge status-progress">En Producción</span></td>
+                                    <td>Carlos Pérez (Sup.)</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </section>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <p>Pan del Sur - Sistema de Control de Producción y Calidad © 2026</p>
+        </footer>
+
+        <script src="reportes.js"></script>
+    </body>
+</html>
