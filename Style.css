@@ -1,9 +1,8 @@
-/* Color base de pan y tipografía limpia para usuarios no técnicos */
 :root {
   --bg-pan: #ffe9d6;
   --corteza-cobre: #faa070;
   --cafe-oscuro: #ce5346;
-  --verde-exito: #2E7D32;
+  --verde-exito: #98cd60;
   --alerta-naranja: #EF6C00;
   --blanco: #FFFFFF;
 }
@@ -16,7 +15,6 @@ body {
   padding: 0;
 }
 
-/* Encabezado */
 .main-header {
   background-color: var(--corteza-cobre);
   color: var(--blanco);
@@ -29,7 +27,22 @@ body {
   font-size: 1.8rem;
 }
 
-/* Navegación con botones grandes para pantallas táctiles */
+.header-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+}
+
+.logo-header {
+  height: 56px;
+  width: 56px;
+  object-fit: contain;
+  background-color: var(--blanco);
+  border-radius: 50%;
+  padding: 4px;
+}
+
 .main-nav {
   background-color: var(--cafe-oscuro);
 }
@@ -54,14 +67,12 @@ body {
   background-color: var(--corteza-cobre);
 }
 
-/* Contenedor principal */
 .container {
   max-width: 1000px;
   margin: 20px auto;
   padding: 0 15px;
 }
 
-/* Contenedores blancos estilo tarjeta */
 .dashboard-summary, .form-section {
   background: var(--blanco);
   padding: 20px;
@@ -70,7 +81,6 @@ body {
   margin-bottom: 25px;
 }
 
-/* Tablas responsivas */
 .table-container {
   overflow-x: auto;
 }
@@ -91,7 +101,6 @@ th {
   background-color: #f2f2f2;
 }
 
-/* Badges de Estado */
 .badge {
   padding: 5px 10px;
   border-radius: 4px;
@@ -103,8 +112,6 @@ th {
 .status-ok { background-color: var(--verde-exito); }
 .status-progress { background-color: #0288D1; }
 .status-review { background-color: var(--alerta-naranja); }
-
-/* Formularios de fácil interacción (para tablets y móviles) */
 .form-group {
   margin-bottom: 15px;
 }
@@ -123,7 +130,6 @@ th {
   border: 1px solid #ccc;
 }
 
-/* Botón prominente de fácil pulsación */
 .btn-primary {
   background-color: var(--corteza-cobre);
   color: var(--blanco);
@@ -144,7 +150,6 @@ footer {
 }
 
 
-/* Tarjetas del resumen */
 
 .summary-grid {
     display: grid;
@@ -159,13 +164,119 @@ footer {
     text-align: center;
 }
 
+.summary-card .product-img {
+    width: 100%;
+    height: 250px;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-bottom: 10px;
+}
+
 .summary-card h3 {
     font-size: 2rem;
     margin: 5px 0;
 }
 
 
-/* Campos de texto */
+
+.form-section .subtitulo {
+    color: var(--cafe-oscuro);
+    margin-top: -10px;
+    margin-bottom: 20px;
+}
+
+.campo {
+    margin-bottom: 18px;
+    display: flex;
+    flex-direction: column;
+}
+
+.campo label {
+    font-size: 0.9rem;
+    font-weight: 700;
+    margin-bottom: 6px;
+    color: var(--cafe-oscuro);
+}
+
+.campo input,
+.campo select,
+.campo textarea {
+    padding: 10px 12px;
+    border: 1px solid var(--corteza-cobre);
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-family: inherit;
+    background-color: var(--blanco);
+    color: var(--cafe-oscuro);
+}
+
+.campo input:focus,
+.campo select:focus,
+.campo textarea:focus {
+    outline: none;
+    border-color: var(--progreso-canela);
+}
+
+.fila {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.fila .campo {
+    flex: 1;
+    min-width: 200px;
+}
+
+#formOrden .btn-primary,
+#formControlCalidad .btn-primary {
+    width: 100%;
+    margin-top: 8px;
+}
+
+.oculto {
+    display: none !important;
+}
+
+.grupo-parametro {
+    background-color: var(--bg-pan);
+    border: 1px solid var(--corteza-cobre);
+    border-radius: 8px;
+    padding: 14px 16px;
+    margin-bottom: 16px;
+}
+
+.grupo-parametro h4 {
+    margin: 0 0 10px 0;
+    color: var(--cafe-oscuro);
+}
+
+.grupo-parametro .rango {
+    font-weight: normal;
+    font-size: 0.8rem;
+    color: #8a4a41;
+}
+
+.grupo-parametro .campo,
+.grupo-parametro .fila .campo {
+    margin-bottom: 0;
+}
+
+.estado-parametro {
+    display: block;
+    margin-top: 8px;
+    font-size: 0.85rem;
+    font-weight: 700;
+}
+
+.estado-parametro.cumple {
+    color: var(--exito-trigo);
+}
+
+.estado-parametro.no-cumple {
+    color: var(--alerta-nuez);
+}
+
 
 .form-group input,
 .form-group textarea {
@@ -185,7 +296,6 @@ footer {
 }
 
 
-/* Resultado */
 
 .result-box {
     background-color: #f5f5f5;
@@ -200,7 +310,6 @@ footer {
 }
 
 
-/* Responsive para tablets y celulares */
 
 @media (max-width: 700px) {
 
