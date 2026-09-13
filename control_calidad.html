@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="es">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Pan del Sur - Control de Calidad</title>
+        <link rel="stylesheet" href="Style.css">
+    </head>
+    <body>
+        <header class="main-header">
+            <div class="header-content">
+                <img src="logo_pan_sur.png" alt="Logo Pan del Sur" class="logo-header">
+                <div>
+                    <h1>Pan del Sur</h1>
+                    <p>Sistema de Control de Produccion y Calidad</p>
+                </div>
+            </div>
+        </header>
+        <nav class="main-nav">
+            <ul>
+                <li><a href="#">DashBoard</a></li>
+                <li><a href="ordenes_produccion.html">Ordenes de Produccion</a></li>
+                <li><a href="control_calidad.html" class="active">Control de Calidad</a></li>
+                <li><a href="#">Lotes/Trazabilidad</a></li>
+                <li><a href="#">Productos e Ingredientes</a></li>
+                <li><a href="#">Reportes</a></li>
+            </ul>
+        </nav>
+        <main class="container">
+            <section class="form-section">
+                <h1>Control de Calidad</h1>
+                <p class="subtitulo">Registra el resultado de una inspeccion de calidad.</p>
+
+                <form id="formControlCalidad">
+
+                    <div class="fila">
+                        <div class="campo">
+                            <label for="lote">Codigo de Lote</label>
+                            <input type="text" id="lote" name="lote" placeholder="Ej: LT-2026-001" required>
+                        </div>
+                        <div class="campo">
+                            <label for="producto">Producto</label>
+                            <select id="producto" name="producto" required>
+                                <option value="">Selecciona una opcion</option>
+                                <option value="PR001">Pan amasado</option>
+                                <option value="PR002">Pan de molde</option>
+                                <option value="PR003">Marraqueta</option>
+                                <option value="PR004">Hallulla</option>
+                                <option value="PR005">Pastel de manzana</option>
+                                <option value="PR006">Queque de vainilla</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="fila">
+                        <div class="campo">
+                            <label for="fecha_inspeccion">Fecha de Inspeccion</label>
+                            <input type="date" id="fecha_inspeccion" name="fecha_inspeccion" required>
+                        </div>
+                        <div class="campo">
+                            <label for="tecnico">Tocnico Responsable</label>
+                            <input type="text" id="tecnico" name="tecnico" placeholder="Ej: Juan Perez" required>
+                        </div>
+                    </div>
+
+                    <h3>Parametros de Calidad a Evaluar</h3>
+                    <p class="subtitulo">Completa los parametros que hayas revisado en esta inspeccion.</p>
+
+                    <div class="grupo-parametro">
+                        <h4>Peso <span class="rango">(tolerancia ± 5%)</span></h4>
+                        <div class="fila">
+                            <div class="campo">
+                                <label for="peso_especificado">Peso Especificado (g)</label>
+                                <input type="number" id="peso_especificado" name="peso_especificado" min="1" placeholder="Ej: 500">
+                            </div>
+                            <div class="campo">
+                                <label for="peso_registrado">Peso Registrado (g)</label>
+                                <input type="number" id="peso_registrado" name="peso_registrado" min="1" placeholder="Ej: 480">
+                            </div>
+                        </div>
+                        <small id="estado_peso" class="estado-parametro"></small>
+                    </div>
+
+                    <div class="grupo-parametro">
+                        <h4>Humedad <span class="rango">(rango aceptable 35% - 40%)</span></h4>
+                        <div class="campo">
+                            <label for="humedad_registrada">Humedad Registrada (%)</label>
+                            <input type="number" id="humedad_registrada" name="humedad_registrada" min="0" max="100" step="0.1" placeholder="Ej: 37.5">
+                        </div>
+                        <small id="estado_humedad" class="estado-parametro"></small>
+                    </div>
+
+                    <div class="grupo-parametro">
+                        <h4>Color de Corteza <span class="rango">(estandar: dorado uniforme)</span></h4>
+                        <div class="campo">
+                            <label for="color_corteza">Evaluacion</label>
+                            <select id="color_corteza" name="color_corteza">
+                                <option value="">Selecciona una opcion</option>
+                                <option value="dorado_uniforme">Dorado uniforme</option>
+                                <option value="palido">Palido</option>
+                                <option value="quemado">Quemado</option>
+                                <option value="disparejo">Disparejo / con manchas</option>
+                            </select>
+                        </div>
+                        <small id="estado_color_corteza" class="estado-parametro"></small>
+                    </div>
+
+                    <div class="grupo-parametro">
+                        <h4>Textura <span class="rango">(estandar: esponjoso)</span></h4>
+                        <div class="campo">
+                            <label for="textura">Evaluacion</label>
+                            <select id="textura" name="textura">
+                                <option value="">Selecciona una opcion</option>
+                                <option value="esponjoso">Esponjoso</option>
+                                <option value="duro">Duro</option>
+                                <option value="seco">Seco</option>
+                                <option value="gomoso">Gomoso</option>
+                                <option value="compacto">Compacto / apelmazado</option>
+                            </select>
+                        </div>
+                        <small id="estado_textura" class="estado-parametro"></small>
+                    </div>
+
+                    <div class="grupo-parametro">
+                        <h4>Sabor <span class="rango">(estandar: caracteristico del producto)</span></h4>
+                        <div class="campo">
+                            <label for="sabor">Evaluacion</label>
+                            <select id="sabor" name="sabor">
+                                <option value="">Selecciona una opcion</option>
+                                <option value="caracteristico">Caracteristico</option>
+                                <option value="acido">Acido</option>
+                                <option value="amargo">Amargo</option>
+                                <option value="insipido">Insipido / sin sabor</option>
+                                <option value="salado">Demasiado salado</option>
+                                <option value="rancio">Rancio</option>
+                            </select>
+                        </div>
+                        <small id="estado_sabor" class="estado-parametro"></small>
+                    </div>
+
+                    <div class="campo">
+                        <label for="resultado">Resultado de la Inspeccion</label>
+                        <select id="resultado" name="resultado" required>
+                            <option value="">Selecciona una opcion</option>
+                            <option value="Conforme">Conforme</option>
+                            <option value="No_conforme">No conforme</option>
+                        </select>
+                    </div>
+
+                    <div class="campo">
+                        <label for="observaciones">Observaciones / Acciones Correctivas</label>
+                        <textarea id="observaciones" name="observaciones" rows="3" placeholder="Obligatorio si el resultado es 'No conforme'"></textarea>
+                    </div>
+
+                    <button type="submit" class="btn-primary">Registrar Inspeccion</button>
+
+                </form>
+            </section>
+        </main>
+        <footer>
+            <p>Pan del Sur &copy; 2026</p>
+        </footer>
+        <script src="control_calidad.js"></script>
+    </body>
+</html>

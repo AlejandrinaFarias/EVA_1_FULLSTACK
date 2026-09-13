@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="es">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Pan del Sur - Control de Produccion</title>
+        <link rel="stylesheet" href="Style.css">
+    </head>
+    <body>
+        <header class="main-header">
+            <div class="header-content">
+                <img src="logo_pan_sur.png" alt="Logo Pan del Sur" class="logo-header">
+                <div>
+                    <h1>Pan del Sur</h1>
+                    <p>Sistema de Control de Produccion y Calidad</p>
+                </div>
+            </div>
+        </header>
+        <nav class="main-nav">
+            <ul>
+                <li><a href="#">DashBoard</a></li>
+                <li><a href="ordenes_produccion.html" class="active">Ordenes de Produccion</a></li>
+                <li><a href="control_calidad.html">Control de Calidad</a></li>
+                <li><a href="#">Lotes/Trazabilidad</a></li>
+                <li><a href="#">Productos e Ingredientes</a></li>
+                <li><a href="#">Reportes</a></li>
+            </ul>
+        </nav>
+        <main class="container">
+            <section class="form-section">
+                <h1>Ordenes de Produccion</h1>
+                <p class="subtitulo">Completa los datos para registrar una nueva orden.</p>
+
+                <form id="formOrden">
+
+                    <div class="campo">
+                        <label for="codigo">Codigo Producto</label>
+                        <input type="text" id="codigo" name="codigo" placeholder="Ej: PR001" required>
+                    </div>
+
+                    <div class="fila">
+                        <div class="campo">
+                            <label for="categoria">Categoria</label>
+                            <select id="categoria" name="categoria" required>
+                                <option value="">Selecciona una opcion</option>
+                                <option value="panaderia">Panaderia</option>
+                                <option value="pasteleria">Pasteleria</option>
+                                <!-- Dependiendo de lo que elija, deben salir las opciones -->
+                            </select>
+                        </div>
+                        <div class="campo">
+                            <label for="producto">Producto</label>
+                            <select id="producto" name="producto" required disabled>
+                                <option value="">Primero selecciona una categoria</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="fila">
+                        <div class="campo">
+                            <label for="cantidad">Cantidad a Producir</label>
+                            <input type="number" id="cantidad" name="cantidad" min="1" max="200" placeholder="Ej: 150" required>
+                        </div>
+                        <div class="campo">
+                            <label for="peso_unidad">Peso por Unidad (g)</label>
+                            <input type="number" id="peso_unidad" name="peso_unidad" min="1" placeholder="Ej: 500" required>
+                        </div>
+                    </div>
+
+                    <div class="campo">
+                        <label for="fecha_produccion">Fecha de Produccion</label>
+                        <input type="date" id="fecha_produccion" name="fecha_produccion" required>
+                    </div>
+
+                    <div class="fila">
+                        <div class="campo">
+                            <label for="estado">Estado</label>
+                            <select id="estado" name="estado" required>
+                                <option value="">Selecciona una opcion</option>
+                                <option value="Programado">Programado</option>
+                                <option value="En_produccion">En produccion</option>
+                                <option value="En_control_calidad">En control de calidad</option>
+                                <option value="Conforme">Conforme</option>
+                                <option value="No_conforme">No conforme</option>
+                                <!-- que el estado cambie cuando pasen por las distintas fases -->
+                            </select>
+                        </div>
+                        <div class="campo">
+                            <label for="prioridad">Prioridad</label>
+                            <select id="prioridad" name="prioridad" required>
+                                <option value="">Selecciona una opcion</option>
+                                <option value="Alta">Alta</option>
+                                <option value="Media">Media</option>
+                                <option value="Baja">Baja</option>
+                                <!-- dependiendo de la fecha, otorgar una prioridad automatica -->
+                            </select>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-primary">Registrar Orden</button>
+
+                </form>
+            </section>
+        </main>
+        <footer>
+            <p>Pan del Sur &copy; 2026</p>
+        </footer>
+        <script src="ordenes_produccion.js"></script>
+    </body>
+</html>
