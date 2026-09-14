@@ -20,11 +20,6 @@
 - prod_ing.js -> agregar productos dinamicamente a la tabla, valida dupes y actualiza contador
 - Style.css -> cambio de la paleta de colores y class para status
 ---
-## tecnologias 
-- html (sin bootcamp)
-- css (Style.css general)
-- javascript (sin librerias)
----
 ## funcionalidades
 **reportes.js**
 - validacion de fechas (inicio <= fin)
