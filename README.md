@@ -48,3 +48,11 @@ abrir reportes.html o prod_ing.html en navegador ambas cargan js automaticamente
 ## notas
 - los js deben estar en la misma carpeta que sus html respectivos
 - el css se mantiene sin camibos
+
+## Anthony
+
+Inicio y Tranzabilidad 
+
+- El archivo "inicio.html" define la disposición de la pantalla principal de "Pan del Sur"; muestra el logotipo y el eslogan de la empresa, así como las opciones de navegación para los 6 módulos del sistema. Presenta la historia de la compañía, su producción diaria de 15.000 unidades en San Bernardo, la ubicación de sus sucursales y las garantías de servicio. El script "inicio.js" complementa esta interfaz haciendo interactivo el menú de navegación, permitiendo el cálculo de precios en tiempo real (calcularTotal()) y gestionando las notificaciones de confirmación al generar cotizaciones (initCotizador()).
+
+- El archivo Tranzabilidad.html define la estructura del módulo de control de lotes y trazabilidad bidireccional para Pan del Sur. Incluye un formulario de búsqueda para escanear o introducir códigos de lote o de materia prima, un panel con información general del producto (código, estado de calidad, fecha de producción y línea de producción) y tres tablas detalladas que abarcan: las materias primas utilizadas, incluidos los datos del proveedor y las fechas de caducidad (trazabilidad ascendente); los parámetros de control de calidad; y los destinos finales de las unidades suministradas a los clientes (trazabilidad descendente). Por su parte, el archivo trazabilidad.js habilita la interactividad de la herramienta de búsqueda mediante la función initBuscadorLote(), la cual valida la entrada del usuario e inicia el proceso de consulta de lotes.
