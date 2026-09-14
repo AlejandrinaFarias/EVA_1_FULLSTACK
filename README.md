@@ -10,38 +10,41 @@
 
 
 
-
+---
 # Melissa (o･ω･o)
+---
 ## Archivos 
 - reportes.html -> Pagina de reportes con KPIs, generador pers. y ultimos lotes.
 - reportes.js -> validacion fechas, calculo dias del periodo y mostrar mensaje dinamico al generar reporte.
 - prod_ing.html -> pagina productos e ingredientes con catalogo, stock y formulario
 - prod_ing.js -> agregar productos dinamicamente a la tabla, valida dupes y actualiza contador
-- Style.css -> cambio de la paleta de colores y class para status 
+- Style.css -> cambio de la paleta de colores y class para status
+---
 ## tecnologias 
--html (sin bootcamp)
+- html (sin bootcamp)
 - css (Style.css general)
 - javascript (sin librerias)
-
+---
 ## funcionalidades
-*reportes.js*
+**reportes.js**
 - validacion de fechas (inicio <= fin)
 - calculo automatico de dias del periodo
 - mensaje dinamico con tipo de reporte y del rango seleccionado
 
-*prod_ing.js*
+**prod_ing.js**
 - insercion denamica de nuevos productos en tabla
 - validacion campos obligatorios y codigo dupe
 - actualizacion automatica del contador de productos
 - formato de precio y stock con separador de miles
 - mensaje de exito/error con cierre automatico a los  4seg
 
-*Style.css*
+**Style.css**
 - cambio de los colores base de la paleta de colores
 - añadir status para los data cell 
+---
 ## uso
 abrir reportes.html o prod_ing.html en navegador ambas cargan js automaticamente
-
+---
 ## notas
 - los js deben estar en la misma carpeta que sus html respectivos
 - el css se mantiene sin camibos
