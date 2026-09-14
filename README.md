@@ -6,3 +6,42 @@
 - Formulario de registro de inspecciones de control de calidad con 5 bloques de parámetros independientes y opcionales (Peso, Humedad, Color de Corteza, Textura, Sabor), cada uno con retroalimentación en vivo apenas se ingresa el valor, sin esperar a enviar el formulario.
 - Validaciones en ambos formularios organizadas en 3 niveles: sintácticas (formato y campos obligatorios), semánticas (fechas y números con sentido lógico) y de negocio (reglas propias de la panadería, como lote mínimo de 10 unidades o que una inspección no pueda marcarse "Conforme" si algún parámetro está fuera de rango).
 - Se mantiene el uso del stylesheet CSS creado anteriormente por Anthony, con agregados propios para estos dos formularios: clases .campo / .fila para el layout de los inputs, .grupo-parametro para encapsular cada parámetro de calidad, y .estado-parametro (.cumple / .no-cumple) para el feedback visual en vivo.
+
+
+
+
+
+# Melissa (o･ω･o)
+## Archivos 
+- reportes.html -> Pagina de reportes con KPIs, generador pers. y ultimos lotes.
+- reportes.js -> validacion fechas, calculo dias del periodo y mostrar mensaje dinamico al generar reporte.
+- prod_ing.html -> pagina productos e ingredientes con catalogo, stock y formulario
+- prod_ing.js -> agregar productos dinamicamente a la tabla, valida dupes y actualiza contador
+- Style.css -> cambio de la paleta de colores y class para status 
+## tecnologias 
+-html (sin bootcamp)
+- css (Style.css general)
+- javascript (sin librerias)
+
+## funcionalidades
+*reportes.js*
+- validacion de fechas (inicio <= fin)
+- calculo automatico de dias del periodo
+- mensaje dinamico con tipo de reporte y del rango seleccionado
+
+*prod_ing.js*
+- insercion denamica de nuevos productos en tabla
+- validacion campos obligatorios y codigo dupe
+- actualizacion automatica del contador de productos
+- formato de precio y stock con separador de miles
+- mensaje de exito/error con cierre automatico a los  4seg
+
+*Style.css*
+- cambio de los colores base de la paleta de colores
+- añadir status para los data cell 
+## uso
+abrir reportes.html o prod_ing.html en navegador ambas cargan js automaticamente
+
+## notas
+- los js deben estar en la misma carpeta que sus html respectivos
+- el css se mantiene sin camibos
