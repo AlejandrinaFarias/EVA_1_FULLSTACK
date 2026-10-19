@@ -6,12 +6,22 @@ module.exports = function (config) {
   config.set({
     frameworks: ['jasmine', 'webpack'],
 
-    files: [
+        files: [
       {
-        pattern: 'tests/componentes.spec.jsx',
+        pattern: 'tests/**/*.spec.jsx',
+        watched: false,
+      },
+      {
+        pattern: 'public/images/**/*',
+        included: false,
+        served: true,
         watched: false,
       },
     ],
+
+    proxies: {
+      '/images/': '/base/public/images/',
+    },
 
     preprocessors: {
       'tests/**/*.jsx': ['webpack'],

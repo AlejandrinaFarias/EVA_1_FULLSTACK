@@ -1,4 +1,4 @@
-/* global describe, it, expect, beforeEach, afterEach, spyOn */
+﻿/* global describe, it, expect, beforeEach, afterEach, spyOn */
 
 import { act } from 'react'
 import { createRoot } from 'react-dom/client'
@@ -8,6 +8,7 @@ import Navbar from '../src/components/Navbar.jsx'
 import OrdenesProduccion from '../src/pages/OrdenesProduccion.jsx'
 import ControlCalidad from '../src/pages/ControlCalidad.jsx'
 
+describe('Entorno aislado', () => {
 window.IS_REACT_ACT_ENVIRONMENT = true
 
 let contenedor
@@ -334,3 +335,5 @@ describe('Componentes de Pan del Sur', () => {
     expect(contenedor.querySelectorAll('tbody tr').length).toBe(1)
   })
 })
+})
+
