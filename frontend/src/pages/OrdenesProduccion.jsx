@@ -1,4 +1,9 @@
 import { useState } from 'react'
+import {
+  obtenerOrdenes,
+  crearOrden,
+  eliminarOrden,
+} from '../data/ordenes.js'
 
 const PRODUCTOS_POR_CATEGORIA = {
   panaderia: [
@@ -22,6 +27,17 @@ const FORMULARIO_INICIAL = {
   fechaProduccion: '',
   estado: 'Programado',
   prioridad: '',
+}
+
+function cargarDatosIniciales() {
+  try {
+    return { ordenes: obtenerOrdenes(), error: '' }
+  } catch {
+    return {
+      ordenes: [],
+      error: 'No se pudieron leer las órdenes guardadas.',
+    }
+  }
 }
 
 function validarOrden(datos) {
@@ -84,10 +100,18 @@ function validarOrden(datos) {
   return errores
 }
 
+function nombreProducto(categoria, valor) {
+  return PRODUCTOS_POR_CATEGORIA[categoria]?.find(
+    (producto) => producto.valor === valor,
+  )?.texto ?? valor
+}
+
 function OrdenesProduccion() {
+  const [datos, setDatos] = useState(cargarDatosIniciales)
   const [formulario, setFormulario] = useState(FORMULARIO_INICIAL)
   const [enviado, setEnviado] = useState(false)
   const [mensaje, setMensaje] = useState('')
+  const [errorOperacion, setErrorOperacion] = useState('')
 
   const errores = enviado ? validarOrden(formulario) : {}
 
@@ -104,18 +128,63 @@ function OrdenesProduccion() {
     }))
 
     setMensaje('')
+    setErrorOperacion('')
   }
 
   function enviarFormulario(evento) {
     evento.preventDefault()
     setEnviado(true)
     setMensaje('')
+    setErrorOperacion('')
 
     if (Object.keys(validarOrden(formulario)).length > 0) {
       return
     }
 
-    setMensaje('Orden válida. Aún no se ha guardado.')
+    try {
+      const nuevaOrden = crearOrden(formulario)
+
+      setDatos((anterior) => ({
+        ordenes: [...anterior.ordenes, nuevaOrden],
+        error: '',
+      }))
+
+      setFormulario({ ...FORMULARIO_INICIAL })
+      setEnviado(false)
+      setMensaje('Orden guardada correctamente.')
+    } catch {
+      setErrorOperacion(
+        'No se pudo guardar la orden. Los campos se conservaron.',
+      )
+    }
+  }
+
+  function borrarOrden(orden) {
+    const confirmar = window.confirm(
+      `¿Eliminar la orden de ${orden.codigo}?`,
+    )
+
+    if (!confirmar) {
+      return
+    }
+
+    setMensaje('')
+    setErrorOperacion('')
+
+    try {
+      eliminarOrden(orden.id)
+
+      setDatos((anterior) => ({
+        ordenes: anterior.ordenes.filter(
+          (elemento) => elemento.id !== orden.id,
+        ),
+        error: '',
+      }))
+
+      setMensaje('Orden eliminada.')
+    } catch {
+      setErrorOperacion('No se pudo eliminar la orden.')
+    }
   }
 
   function claseCampo(nombre, esSelect = false) {
@@ -151,6 +220,12 @@ function OrdenesProduccion() {
         {mensaje && (
           <div className="alert alert-success" role="status">
             {mensaje}
+          </div>
+        )}
+
+        {(datos.error || errorOperacion) && (
+          <div className="alert alert-danger" role="alert">
+            {errorOperacion || datos.error}
           </div>
         )}
 
@@ -319,14 +394,70 @@ function OrdenesProduccion() {
           <button
             type="submit"
             className="btn mt-4"
+            disabled={Boolean(datos.error)}
             style={{
               backgroundColor: 'var(--cafe-oscuro)',
               color: 'var(--blanco)',
             }}
           >
-            Validar orden
+            Guardar orden
           </button>
         </form>
+
+        <hr className="my-4" />
+
+        <h3 className="h5">
+          Órdenes registradas ({datos.ordenes.length})
+        </h3>
+
+        {datos.error ? (
+          <p>No se pudieron cargar los registros.</p>
+        ) : datos.ordenes.length === 0 ? (
+          <p className="mb-0">Todavía no hay órdenes registradas.</p>
+        ) : (
+          <div className="table-responsive">
+            <table className="table table-striped align-middle">
+              <caption>Órdenes guardadas en este navegador.</caption>
+              <thead>
+                <tr>
+                  <th scope="col">Código</th>
+                  <th scope="col">Producto</th>
+                  <th scope="col">Cantidad</th>
+                  <th scope="col">Peso (g)</th>
+                  <th scope="col">Fecha</th>
+                  <th scope="col">Estado</th>
+                  <th scope="col">Prioridad</th>
+                  <th scope="col">Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                {datos.ordenes.map((orden) => (
+                  <tr key={orden.id}>
+                    <td>{orden.codigo}</td>
+                    <td>
+                      {nombreProducto(orden.categoria, orden.producto)}
+                    </td>
+                    <td>{orden.cantidad}</td>
+                    <td>{orden.pesoUnidad}</td>
+                    <td>{orden.fechaProduccion}</td>
+                    <td>{orden.estado}</td>
+                    <td>{orden.prioridad}</td>
+                    <td>
+                      <button
+                        type="button"
+                        className="btn btn-outline-danger btn-sm"
+                        aria-label={`Eliminar orden de ${orden.codigo}`}
+                        onClick={() => borrarOrden(orden)}
+                      >
+                        Eliminar
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
     </section>
   )
