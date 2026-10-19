@@ -1,3 +1,9 @@
+import {
+  obtenerProductosDisponibles,
+  agruparProductos,
+} from './productosDisponibles.js'
+
+// Compatibilidad con las pantallas que todavía usan esta lista.
 export const PRODUCTOS_POR_CATEGORIA = {
   panaderia: [
     { valor: 'pan_amasado', texto: 'Pan amasado' },
@@ -22,27 +28,40 @@ export const FORMULARIO_INICIAL = {
   prioridad: '',
 }
 
-export function validarOrden(datos, ordenOriginal = null) {
+export function validarOrden(
+  datos,
+  ordenOriginal = null,
+  productos = obtenerProductosDisponibles(),
+) {
   const errores = {}
+  const grupos = agruparProductos(productos)
 
   if (!/^[A-Za-z0-9-]{3,}$/.test(datos.codigo.trim())) {
-    errores.codigo = 'Usa al menos 3 caracteres: letras, números o guiones.'
+    errores.codigo = 'Usa al menos 3 letras, números o guiones.'
   }
 
-  const productos = PRODUCTOS_POR_CATEGORIA[datos.categoria] ?? []
-
-  if (!PRODUCTOS_POR_CATEGORIA[datos.categoria]) {
+  if (!Object.hasOwn(grupos, datos.categoria)) {
     errores.categoria = 'Selecciona una categoría.'
   }
 
-  if (!productos.some((producto) => producto.valor === datos.producto)) {
-    errores.producto = 'Selecciona un producto.'
+  const opciones = grupos[datos.categoria] ?? []
+  const productoExiste = opciones.some(
+    (producto) => producto.valor === datos.producto,
+  )
+
+  const conservaProducto =
+    ordenOriginal !== null &&
+    datos.producto === ordenOriginal.producto &&
+    datos.categoria === ordenOriginal.categoria
+
+  if (!productoExiste && !conservaProducto) {
+    errores.producto = 'Selecciona un producto del catálogo.'
   }
 
   const cantidad = Number(datos.cantidad)
 
   if (
-    datos.cantidad.trim() === '' ||
+    String(datos.cantidad).trim() === '' ||
     !Number.isInteger(cantidad) ||
     cantidad < 10 ||
     cantidad > 200
@@ -53,7 +72,7 @@ export function validarOrden(datos, ordenOriginal = null) {
   const peso = Number(datos.pesoUnidad)
 
   if (
-    datos.pesoUnidad.trim() === '' ||
+    String(datos.pesoUnidad).trim() === '' ||
     !Number.isFinite(peso) ||
     peso <= 0
   ) {
@@ -65,13 +84,13 @@ export function validarOrden(datos, ordenOriginal = null) {
   manana.setHours(0, 0, 0, 0)
   manana.setDate(manana.getDate() + 1)
 
-  const conservaFechaOriginal =
+  const conservaFecha =
     ordenOriginal !== null &&
     datos.fechaProduccion === ordenOriginal.fechaProduccion
 
   if (!datos.fechaProduccion || Number.isNaN(fecha.getTime())) {
     errores.fechaProduccion = 'Selecciona una fecha.'
-  } else if (!conservaFechaOriginal && fecha < manana) {
+  } else if (!conservaFecha && fecha < manana) {
     errores.fechaProduccion = 'Selecciona desde mañana.'
   }
 
@@ -87,7 +106,13 @@ export function validarOrden(datos, ordenOriginal = null) {
 }
 
 export function nombreProducto(categoria, valor) {
-  return PRODUCTOS_POR_CATEGORIA[categoria]?.find(
-    (producto) => producto.valor === valor,
-  )?.texto ?? valor
+  const producto = obtenerProductosDisponibles().find(
+    (item) => item.valor === valor,
+  )
+
+  return producto?.texto ??
+    PRODUCTOS_POR_CATEGORIA[categoria]?.find(
+      (item) => item.valor === valor,
+    )?.texto ??
+    valor
 }

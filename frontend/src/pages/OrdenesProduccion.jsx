@@ -6,40 +6,124 @@ import {
   eliminarOrden,
 } from '../data/ordenes.js'
 import {
-  PRODUCTOS_POR_CATEGORIA,
   FORMULARIO_INICIAL,
   validarOrden,
-  nombreProducto,
+  PRODUCTOS_POR_CATEGORIA,
 } from '../data/validacionOrdenes.js'
+import {
+  obtenerProductosDisponibles,
+  agruparProductos,
+} from '../data/productosDisponibles.js'
 
-function cargarDatosIniciales() {
+const CAMPOS = [
+  {
+    nombre: 'codigo',
+    etiqueta: 'Código de producto',
+    tipo: 'text',
+  },
+  {
+    nombre: 'categoria',
+    etiqueta: 'Categoría',
+    opciones: [
+      ['panaderia', 'Panadería'],
+      ['pasteleria', 'Pastelería'],
+    ],
+  },
+  {
+    nombre: 'producto',
+    etiqueta: 'Producto',
+    opciones: [],
+  },
+  {
+    nombre: 'cantidad',
+    etiqueta: 'Cantidad a producir (unidades)',
+    tipo: 'number',
+    min: 10,
+    max: 200,
+    step: 1,
+  },
+  {
+    nombre: 'pesoUnidad',
+    etiqueta: 'Peso por unidad (gramos)',
+    tipo: 'number',
+    step: 'any',
+  },
+  {
+    nombre: 'fechaProduccion',
+    etiqueta: 'Fecha de producción',
+    tipo: 'date',
+  },
+  {
+    nombre: 'estado',
+    etiqueta: 'Estado',
+    opciones: [['Programado', 'Programado']],
+  },
+  {
+    nombre: 'prioridad',
+    etiqueta: 'Prioridad',
+    opciones: [
+      ['Baja', 'Baja'],
+      ['Media', 'Media'],
+      ['Alta', 'Alta'],
+    ],
+  },
+]
+
+function cargarInicial() {
   try {
-    return { ordenes: obtenerOrdenes(), error: '' }
+    return {
+      ordenes: obtenerOrdenes(),
+      productos: obtenerProductosDisponibles(),
+      error: '',
+    }
   } catch {
     return {
       ordenes: [],
-      error: 'No se pudieron leer las órdenes guardadas.',
+      productos: [],
+      error: 'No se pudieron cargar las órdenes o el catálogo.',
     }
   }
 }
 
 function OrdenesProduccion() {
-  const [datos, setDatos] = useState(cargarDatosIniciales)
-  const [formulario, setFormulario] = useState(FORMULARIO_INICIAL)
-  const [ordenOriginal, setOrdenOriginal] = useState(null)
+  const [datos, setDatos] = useState(cargarInicial)
+  const [formulario, setFormulario] = useState({ ...FORMULARIO_INICIAL })
+  const [original, setOriginal] = useState(null)
   const [enviado, setEnviado] = useState(false)
-  const [mensaje, setMensaje] = useState('')
-  const [errorOperacion, setErrorOperacion] = useState('')
+  const [aviso, setAviso] = useState(null)
 
-  const editando = ordenOriginal !== null
   const errores = enviado
-    ? validarOrden(formulario, ordenOriginal)
+    ? validarOrden(formulario, original, datos.productos)
     : {}
 
-  const productosDisponibles =
-    PRODUCTOS_POR_CATEGORIA[formulario.categoria] ?? []
+  const grupos = agruparProductos(datos.productos)
+  const disponibles = grupos[formulario.categoria] ?? []
 
-  function cambiarCampo(evento) {
+  const productoRetirado =
+    original !== null &&
+    formulario.categoria === original.categoria &&
+    !disponibles.some(
+      (producto) => producto.valor === original.producto,
+    )
+
+  function nombreProducto(orden) {
+    return datos.productos.find(
+      (producto) => producto.valor === orden.producto,
+    )?.texto ??
+      orden.productoNombre ??
+      PRODUCTOS_POR_CATEGORIA[orden.categoria]?.find(
+        (producto) => producto.valor === orden.producto,
+      )?.texto ??
+      orden.producto
+  }
+
+  function limpiar() {
+    setFormulario({ ...FORMULARIO_INICIAL })
+    setOriginal(null)
+    setEnviado(false)
+  }
+
+  function cambiar(evento) {
     const { name, value } = evento.target
 
     setFormulario((anterior) => ({
@@ -48,145 +132,109 @@ function OrdenesProduccion() {
       ...(name === 'categoria' ? { producto: '' } : {}),
     }))
 
-    setMensaje('')
-    setErrorOperacion('')
+    setAviso(null)
   }
 
-  function limpiarFormulario() {
-    setFormulario({ ...FORMULARIO_INICIAL })
-    setOrdenOriginal(null)
-    setEnviado(false)
-  }
-
-  function enviarFormulario(evento) {
+  function guardar(evento) {
     evento.preventDefault()
     setEnviado(true)
-    setMensaje('')
-    setErrorOperacion('')
+    setAviso(null)
 
     if (
-      Object.keys(validarOrden(formulario, ordenOriginal)).length > 0
+      Object.keys(
+        validarOrden(formulario, original, datos.productos),
+      ).length > 0
     ) {
       return
     }
 
+    const seleccionado = datos.productos.find(
+      (producto) => producto.valor === formulario.producto,
+    )
+
+    const valores = {
+      ...formulario,
+      codigo: formulario.codigo.trim().toUpperCase(),
+      cantidad: Number(formulario.cantidad),
+      pesoUnidad: Number(formulario.pesoUnidad),
+      productoNombre:
+        seleccionado?.texto ??
+        original?.productoNombre ??
+        nombreProducto(formulario),
+    }
+
     try {
-      if (editando) {
-        const cambios = {
-          ...formulario,
-          codigo: formulario.codigo.trim().toUpperCase(),
-          cantidad: Number(formulario.cantidad),
-          pesoUnidad: Number(formulario.pesoUnidad),
-        }
+      const registro = original
+        ? actualizarOrden(original.id, valores)
+        : crearOrden(valores)
 
-        const ordenActualizada = actualizarOrden(
-          ordenOriginal.id,
-          cambios,
-        )
+      setDatos((anterior) => ({
+        ...anterior,
+        ordenes: original
+          ? anterior.ordenes.map((orden) =>
+              orden.id === original.id ? registro : orden,
+            )
+          : [...anterior.ordenes, registro],
+      }))
 
-        setDatos((anterior) => ({
-          ordenes: anterior.ordenes.map((orden) =>
-            orden.id === ordenActualizada.id
-              ? ordenActualizada
-              : orden,
-          ),
-          error: '',
-        }))
+      setAviso({
+        tipo: 'success',
+        texto: original
+          ? 'Orden actualizada.'
+          : 'Orden guardada.',
+      })
 
-        setMensaje('Orden actualizada correctamente.')
-      } else {
-        const nuevaOrden = crearOrden(formulario)
-
-        setDatos((anterior) => ({
-          ordenes: [...anterior.ordenes, nuevaOrden],
-          error: '',
-        }))
-
-        setMensaje('Orden guardada correctamente.')
-      }
-
-      limpiarFormulario()
+      limpiar()
     } catch {
-      setErrorOperacion(
-        'No se pudieron guardar los cambios. Los campos se conservaron.',
-      )
+      setAviso({
+        tipo: 'danger',
+        texto: 'No se pudo guardar. Los campos se conservaron.',
+      })
     }
   }
 
-  function editarOrden(orden) {
-    setOrdenOriginal(orden)
+  function editar(orden) {
+    setOriginal(orden)
 
-    setFormulario({
-      codigo: orden.codigo,
-      categoria: orden.categoria,
-      producto: orden.producto,
-      cantidad: String(orden.cantidad),
-      pesoUnidad: String(orden.pesoUnidad),
-      fechaProduccion: orden.fechaProduccion,
-      estado: orden.estado,
-      prioridad: orden.prioridad,
-    })
+    setFormulario(
+      Object.fromEntries(
+        Object.keys(FORMULARIO_INICIAL).map((campo) => [
+          campo,
+          String(orden[campo] ?? ''),
+        ]),
+      ),
+    )
 
     setEnviado(false)
-    setMensaje('')
-    setErrorOperacion('')
-
+    setAviso(null)
     document.getElementById('codigo')?.focus()
   }
 
-  function cancelarEdicion() {
-    limpiarFormulario()
-    setMensaje('')
-    setErrorOperacion('')
-  }
-
-  function borrarOrden(orden) {
+  function eliminar(orden) {
     if (!window.confirm(`¿Eliminar la orden de ${orden.codigo}?`)) {
       return
     }
-
-    setMensaje('')
-    setErrorOperacion('')
 
     try {
       eliminarOrden(orden.id)
 
       setDatos((anterior) => ({
+        ...anterior,
         ordenes: anterior.ordenes.filter(
-          (elemento) => elemento.id !== orden.id,
+          (item) => item.id !== orden.id,
         ),
-        error: '',
       }))
 
-      if (ordenOriginal?.id === orden.id) {
-        limpiarFormulario()
+      if (original?.id === orden.id) {
+        limpiar()
       }
 
-      setMensaje('Orden eliminada.')
+      setAviso({ tipo: 'success', texto: 'Orden eliminada.' })
     } catch {
-      setErrorOperacion('No se pudo eliminar la orden.')
-    }
-  }
-
-  function claseCampo(nombre, esSelect = false) {
-    const clase = esSelect ? 'form-select' : 'form-control'
-    return `${clase}${errores[nombre] ? ' is-invalid' : ''}`
-  }
-
-  function mensajeError(nombre) {
-    return errores[nombre] ? (
-      <div id={`error-${nombre}`} className="invalid-feedback">
-        {errores[nombre]}
-      </div>
-    ) : null
-  }
-
-  function atributosError(nombre) {
-    return {
-      'aria-invalid': Boolean(errores[nombre]),
-      'aria-describedby': errores[nombre]
-        ? `error-${nombre}`
-        : undefined,
+      setAviso({
+        tipo: 'danger',
+        texto: 'No se pudo eliminar la orden.',
+      })
     }
   }
 
@@ -194,188 +242,106 @@ function OrdenesProduccion() {
     <section className="card border-0 shadow-sm">
       <div className="card-body p-4">
         <h2>Órdenes de producción</h2>
-        <p className="mb-4">
-          {editando
-            ? 'Modifica los datos de la orden seleccionada.'
+        <p>
+          {original
+            ? 'Modifica la orden seleccionada.'
             : 'Completa los datos para registrar una nueva orden.'}
         </p>
 
-        {mensaje && (
-          <div className="alert alert-success" role="status">
-            {mensaje}
+        {(datos.error || aviso) && (
+          <div
+            className={`alert alert-${datos.error ? 'danger' : aviso.tipo}`}
+            role={datos.error || aviso?.tipo === 'danger' ? 'alert' : 'status'}
+          >
+            {datos.error || aviso.texto}
           </div>
         )}
 
-        {(datos.error || errorOperacion) && (
-          <div className="alert alert-danger" role="alert">
-            {errorOperacion || datos.error}
-          </div>
-        )}
-
-        <h3 className="h5 mb-3">
-          {editando ? 'Editar orden' : 'Nueva orden'}
+        <h3 className="h5 mt-4">
+          {original ? 'Editar orden' : 'Nueva orden'}
         </h3>
 
-        <form onSubmit={enviarFormulario} noValidate>
+        <form onSubmit={guardar} noValidate>
           <div className="row g-3">
-            <div className="col-12">
-              <label htmlFor="codigo" className="form-label">
-                Código de producto
-              </label>
-              <input
-                id="codigo"
-                name="codigo"
-                type="text"
-                className={claseCampo('codigo')}
-                value={formulario.codigo}
-                onChange={cambiarCampo}
-                required
-                {...atributosError('codigo')}
-              />
-              {mensajeError('codigo')}
-            </div>
+            {CAMPOS.map((campo) => {
+              const opciones = campo.nombre === 'producto'
+                ? disponibles.map((producto) => [
+                    producto.valor,
+                    producto.texto,
+                  ])
+                : campo.opciones
 
-            <div className="col-12 col-md-6">
-              <label htmlFor="categoria" className="form-label">
-                Categoría
-              </label>
-              <select
-                id="categoria"
-                name="categoria"
-                className={claseCampo('categoria', true)}
-                value={formulario.categoria}
-                onChange={cambiarCampo}
-                required
-                {...atributosError('categoria')}
-              >
-                <option value="">Selecciona una categoría</option>
-                <option value="panaderia">Panadería</option>
-                <option value="pasteleria">Pastelería</option>
-              </select>
-              {mensajeError('categoria')}
-            </div>
+              const propiedades = {
+                id: campo.nombre,
+                name: campo.nombre,
+                value: formulario[campo.nombre],
+                onChange: cambiar,
+                required: true,
+                className: `${
+                  opciones ? 'form-select' : 'form-control'
+                }${errores[campo.nombre] ? ' is-invalid' : ''}`,
+                'aria-invalid': Boolean(errores[campo.nombre]),
+                'aria-describedby': errores[campo.nombre]
+                  ? `error-${campo.nombre}`
+                  : undefined,
+              }
 
-            <div className="col-12 col-md-6">
-              <label htmlFor="producto" className="form-label">
-                Producto
-              </label>
-              <select
-                id="producto"
-                name="producto"
-                className={claseCampo('producto', true)}
-                value={formulario.producto}
-                onChange={cambiarCampo}
-                disabled={!formulario.categoria}
-                required
-                {...atributosError('producto')}
-              >
-                <option value="">
-                  {formulario.categoria
-                    ? 'Selecciona un producto'
-                    : 'Primero selecciona una categoría'}
-                </option>
-                {productosDisponibles.map((producto) => (
-                  <option key={producto.valor} value={producto.valor}>
-                    {producto.texto}
-                  </option>
-                ))}
-              </select>
-              {mensajeError('producto')}
-            </div>
+              return (
+                <div
+                  className={
+                    campo.nombre === 'codigo'
+                      ? 'col-12'
+                      : 'col-12 col-md-6'
+                  }
+                  key={campo.nombre}
+                >
+                  <label htmlFor={campo.nombre} className="form-label">
+                    {campo.etiqueta}
+                  </label>
 
-            <div className="col-12 col-md-6">
-              <label htmlFor="cantidad" className="form-label">
-                Cantidad a producir (unidades)
-              </label>
-              <input
-                id="cantidad"
-                name="cantidad"
-                type="number"
-                min="10"
-                max="200"
-                step="1"
-                className={claseCampo('cantidad')}
-                value={formulario.cantidad}
-                onChange={cambiarCampo}
-                required
-                {...atributosError('cantidad')}
-              />
-              {mensajeError('cantidad')}
-            </div>
+                  {opciones ? (
+                    <select
+                      {...propiedades}
+                      disabled={
+                        campo.nombre === 'producto' &&
+                        !formulario.categoria
+                      }
+                    >
+                      <option value="">Selecciona una opción</option>
 
-            <div className="col-12 col-md-6">
-              <label htmlFor="pesoUnidad" className="form-label">
-                Peso por unidad (gramos)
-              </label>
-              <input
-                id="pesoUnidad"
-                name="pesoUnidad"
-                type="number"
-                step="any"
-                className={claseCampo('pesoUnidad')}
-                value={formulario.pesoUnidad}
-                onChange={cambiarCampo}
-                required
-                {...atributosError('pesoUnidad')}
-              />
-              {mensajeError('pesoUnidad')}
-            </div>
+                      {campo.nombre === 'producto' && productoRetirado && (
+                        <option value={original.producto}>
+                          {nombreProducto(original)} (fuera del catálogo)
+                        </option>
+                      )}
 
-            <div className="col-12 col-md-6">
-              <label htmlFor="fechaProduccion" className="form-label">
-                Fecha de producción
-              </label>
-              <input
-                id="fechaProduccion"
-                name="fechaProduccion"
-                type="date"
-                className={claseCampo('fechaProduccion')}
-                value={formulario.fechaProduccion}
-                onChange={cambiarCampo}
-                required
-                {...atributosError('fechaProduccion')}
-              />
-              {mensajeError('fechaProduccion')}
-            </div>
+                      {opciones.map(([valor, texto]) => (
+                        <option key={valor} value={valor}>
+                          {texto}
+                        </option>
+                      ))}
+                    </select>
+                  ) : (
+                    <input
+                      {...propiedades}
+                      type={campo.tipo}
+                      min={campo.min}
+                      max={campo.max}
+                      step={campo.step}
+                    />
+                  )}
 
-            <div className="col-12 col-md-6">
-              <label htmlFor="estado" className="form-label">
-                Estado
-              </label>
-              <select
-                id="estado"
-                name="estado"
-                className={claseCampo('estado', true)}
-                value={formulario.estado}
-                onChange={cambiarCampo}
-                required
-                {...atributosError('estado')}
-              >
-                <option value="Programado">Programado</option>
-              </select>
-              {mensajeError('estado')}
-            </div>
-
-            <div className="col-12 col-md-6">
-              <label htmlFor="prioridad" className="form-label">
-                Prioridad
-              </label>
-              <select
-                id="prioridad"
-                name="prioridad"
-                className={claseCampo('prioridad', true)}
-                value={formulario.prioridad}
-                onChange={cambiarCampo}
-                required
-                {...atributosError('prioridad')}
-              >
-                <option value="">Selecciona una prioridad</option>
-                <option value="Baja">Baja</option>
-                <option value="Media">Media</option>
-                <option value="Alta">Alta</option>
-              </select>
-              {mensajeError('prioridad')}
-            </div>
+                  {errores[campo.nombre] && (
+                    <div
+                      id={`error-${campo.nombre}`}
+                      className="invalid-feedback"
+                    >
+                      {errores[campo.nombre]}
+                    </div>
+                  )}
+                </div>
+              )
+            })}
           </div>
 
           <div className="d-flex flex-wrap gap-2 mt-4">
@@ -388,14 +354,17 @@ function OrdenesProduccion() {
                 color: 'var(--blanco)',
               }}
             >
-              {editando ? 'Guardar cambios' : 'Guardar orden'}
+              {original ? 'Guardar cambios' : 'Guardar orden'}
             </button>
 
-            {editando && (
+            {original && (
               <button
                 type="button"
                 className="btn btn-outline-secondary"
-                onClick={cancelarEdicion}
+                onClick={() => {
+                  limpiar()
+                  setAviso(null)
+                }}
               >
                 Cancelar edición
               </button>
@@ -412,30 +381,26 @@ function OrdenesProduccion() {
         {datos.error ? (
           <p>No se pudieron cargar los registros.</p>
         ) : datos.ordenes.length === 0 ? (
-          <p className="mb-0">Todavía no hay órdenes registradas.</p>
+          <p>No hay órdenes registradas.</p>
         ) : (
           <div className="table-responsive">
             <table className="table table-striped align-middle">
               <caption>Órdenes guardadas en este navegador.</caption>
               <thead>
                 <tr>
-                  <th scope="col">Código</th>
-                  <th scope="col">Producto</th>
-                  <th scope="col">Cantidad</th>
-                  <th scope="col">Peso (g)</th>
-                  <th scope="col">Fecha</th>
-                  <th scope="col">Estado</th>
-                  <th scope="col">Prioridad</th>
-                  <th scope="col">Acciones</th>
+                  {[
+                    'Código', 'Producto', 'Cantidad', 'Peso (g)',
+                    'Fecha', 'Estado', 'Prioridad', 'Acciones',
+                  ].map((titulo) => (
+                    <th scope="col" key={titulo}>{titulo}</th>
+                  ))}
                 </tr>
               </thead>
               <tbody>
                 {datos.ordenes.map((orden) => (
                   <tr key={orden.id}>
                     <td>{orden.codigo}</td>
-                    <td>
-                      {nombreProducto(orden.categoria, orden.producto)}
-                    </td>
+                    <td>{nombreProducto(orden)}</td>
                     <td>{orden.cantidad}</td>
                     <td>{orden.pesoUnidad}</td>
                     <td>{orden.fechaProduccion}</td>
@@ -446,16 +411,14 @@ function OrdenesProduccion() {
                         <button
                           type="button"
                           className="btn btn-outline-secondary btn-sm"
-                          aria-label={`Editar orden de ${orden.codigo}`}
-                          onClick={() => editarOrden(orden)}
+                          onClick={() => editar(orden)}
                         >
                           Editar
                         </button>
                         <button
                           type="button"
                           className="btn btn-outline-danger btn-sm"
-                          aria-label={`Eliminar orden de ${orden.codigo}`}
-                          onClick={() => borrarOrden(orden)}
+                          onClick={() => eliminar(orden)}
                         >
                           Eliminar
                         </button>
