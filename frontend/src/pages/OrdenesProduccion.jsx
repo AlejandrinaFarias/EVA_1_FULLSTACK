@@ -2,32 +2,15 @@ import { useState } from 'react'
 import {
   obtenerOrdenes,
   crearOrden,
+  actualizarOrden,
   eliminarOrden,
 } from '../data/ordenes.js'
-
-const PRODUCTOS_POR_CATEGORIA = {
-  panaderia: [
-    { valor: 'pan_amasado', texto: 'Pan amasado' },
-    { valor: 'pan_molde', texto: 'Pan de molde' },
-    { valor: 'marraqueta', texto: 'Marraqueta' },
-    { valor: 'hallulla', texto: 'Hallulla' },
-  ],
-  pasteleria: [
-    { valor: 'pastel_manzana', texto: 'Pastel de manzana' },
-    { valor: 'queque_vainilla', texto: 'Queque de vainilla' },
-  ],
-}
-
-const FORMULARIO_INICIAL = {
-  codigo: '',
-  categoria: '',
-  producto: '',
-  cantidad: '',
-  pesoUnidad: '',
-  fechaProduccion: '',
-  estado: 'Programado',
-  prioridad: '',
-}
+import {
+  PRODUCTOS_POR_CATEGORIA,
+  FORMULARIO_INICIAL,
+  validarOrden,
+  nombreProducto,
+} from '../data/validacionOrdenes.js'
 
 function cargarDatosIniciales() {
   try {
@@ -40,80 +23,18 @@ function cargarDatosIniciales() {
   }
 }
 
-function validarOrden(datos) {
-  const errores = {}
-
-  if (!/^[A-Za-z0-9-]{3,}$/.test(datos.codigo.trim())) {
-    errores.codigo = 'Usa al menos 3 caracteres: letras, números o guiones.'
-  }
-
-  const productos = PRODUCTOS_POR_CATEGORIA[datos.categoria] ?? []
-
-  if (!PRODUCTOS_POR_CATEGORIA[datos.categoria]) {
-    errores.categoria = 'Selecciona una categoría.'
-  }
-
-  if (!productos.some((producto) => producto.valor === datos.producto)) {
-    errores.producto = 'Selecciona un producto.'
-  }
-
-  const cantidad = Number(datos.cantidad)
-
-  if (
-    datos.cantidad.trim() === '' ||
-    !Number.isInteger(cantidad) ||
-    cantidad < 10 ||
-    cantidad > 200
-  ) {
-    errores.cantidad = 'Ingresa entre 10 y 200 unidades enteras.'
-  }
-
-  const peso = Number(datos.pesoUnidad)
-
-  if (
-    datos.pesoUnidad.trim() === '' ||
-    !Number.isFinite(peso) ||
-    peso <= 0
-  ) {
-    errores.pesoUnidad = 'Ingresa un peso mayor que cero.'
-  }
-
-  const fecha = new Date(`${datos.fechaProduccion}T00:00:00`)
-  const manana = new Date()
-  manana.setHours(0, 0, 0, 0)
-  manana.setDate(manana.getDate() + 1)
-
-  if (!datos.fechaProduccion || Number.isNaN(fecha.getTime())) {
-    errores.fechaProduccion = 'Selecciona una fecha.'
-  } else if (fecha < manana) {
-    errores.fechaProduccion = 'Selecciona desde mañana.'
-  }
-
-  if (datos.estado !== 'Programado') {
-    errores.estado = 'El estado inicial debe ser Programado.'
-  }
-
-  if (!['Baja', 'Media', 'Alta'].includes(datos.prioridad)) {
-    errores.prioridad = 'Selecciona una prioridad.'
-  }
-
-  return errores
-}
-
-function nombreProducto(categoria, valor) {
-  return PRODUCTOS_POR_CATEGORIA[categoria]?.find(
-    (producto) => producto.valor === valor,
-  )?.texto ?? valor
-}
-
 function OrdenesProduccion() {
   const [datos, setDatos] = useState(cargarDatosIniciales)
   const [formulario, setFormulario] = useState(FORMULARIO_INICIAL)
+  const [ordenOriginal, setOrdenOriginal] = useState(null)
   const [enviado, setEnviado] = useState(false)
   const [mensaje, setMensaje] = useState('')
   const [errorOperacion, setErrorOperacion] = useState('')
 
-  const errores = enviado ? validarOrden(formulario) : {}
+  const editando = ordenOriginal !== null
+  const errores = enviado
+    ? validarOrden(formulario, ordenOriginal)
+    : {}
 
   const productosDisponibles =
     PRODUCTOS_POR_CATEGORIA[formulario.categoria] ?? []
@@ -131,40 +52,96 @@ function OrdenesProduccion() {
     setErrorOperacion('')
   }
 
+  function limpiarFormulario() {
+    setFormulario({ ...FORMULARIO_INICIAL })
+    setOrdenOriginal(null)
+    setEnviado(false)
+  }
+
   function enviarFormulario(evento) {
     evento.preventDefault()
     setEnviado(true)
     setMensaje('')
     setErrorOperacion('')
 
-    if (Object.keys(validarOrden(formulario)).length > 0) {
+    if (
+      Object.keys(validarOrden(formulario, ordenOriginal)).length > 0
+    ) {
       return
     }
 
     try {
-      const nuevaOrden = crearOrden(formulario)
+      if (editando) {
+        const cambios = {
+          ...formulario,
+          codigo: formulario.codigo.trim().toUpperCase(),
+          cantidad: Number(formulario.cantidad),
+          pesoUnidad: Number(formulario.pesoUnidad),
+        }
 
-      setDatos((anterior) => ({
-        ordenes: [...anterior.ordenes, nuevaOrden],
-        error: '',
-      }))
+        const ordenActualizada = actualizarOrden(
+          ordenOriginal.id,
+          cambios,
+        )
 
-      setFormulario({ ...FORMULARIO_INICIAL })
-      setEnviado(false)
-      setMensaje('Orden guardada correctamente.')
+        setDatos((anterior) => ({
+          ordenes: anterior.ordenes.map((orden) =>
+            orden.id === ordenActualizada.id
+              ? ordenActualizada
+              : orden,
+          ),
+          error: '',
+        }))
+
+        setMensaje('Orden actualizada correctamente.')
+      } else {
+        const nuevaOrden = crearOrden(formulario)
+
+        setDatos((anterior) => ({
+          ordenes: [...anterior.ordenes, nuevaOrden],
+          error: '',
+        }))
+
+        setMensaje('Orden guardada correctamente.')
+      }
+
+      limpiarFormulario()
     } catch {
       setErrorOperacion(
-        'No se pudo guardar la orden. Los campos se conservaron.',
+        'No se pudieron guardar los cambios. Los campos se conservaron.',
       )
     }
   }
 
-  function borrarOrden(orden) {
-    const confirmar = window.confirm(
-      `¿Eliminar la orden de ${orden.codigo}?`,
-    )
+  function editarOrden(orden) {
+    setOrdenOriginal(orden)
 
-    if (!confirmar) {
+    setFormulario({
+      codigo: orden.codigo,
+      categoria: orden.categoria,
+      producto: orden.producto,
+      cantidad: String(orden.cantidad),
+      pesoUnidad: String(orden.pesoUnidad),
+      fechaProduccion: orden.fechaProduccion,
+      estado: orden.estado,
+      prioridad: orden.prioridad,
+    })
+
+    setEnviado(false)
+    setMensaje('')
+    setErrorOperacion('')
+
+    document.getElementById('codigo')?.focus()
+  }
+
+  function cancelarEdicion() {
+    limpiarFormulario()
+    setMensaje('')
+    setErrorOperacion('')
+  }
+
+  function borrarOrden(orden) {
+    if (!window.confirm(`¿Eliminar la orden de ${orden.codigo}?`)) {
       return
     }
 
@@ -180,6 +157,10 @@ function OrdenesProduccion() {
         ),
         error: '',
       }))
+
+      if (ordenOriginal?.id === orden.id) {
+        limpiarFormulario()
+      }
 
       setMensaje('Orden eliminada.')
     } catch {
@@ -214,7 +195,9 @@ function OrdenesProduccion() {
       <div className="card-body p-4">
         <h2>Órdenes de producción</h2>
         <p className="mb-4">
-          Completa los datos para registrar una nueva orden.
+          {editando
+            ? 'Modifica los datos de la orden seleccionada.'
+            : 'Completa los datos para registrar una nueva orden.'}
         </p>
 
         {mensaje && (
@@ -228,6 +211,10 @@ function OrdenesProduccion() {
             {errorOperacion || datos.error}
           </div>
         )}
+
+        <h3 className="h5 mb-3">
+          {editando ? 'Editar orden' : 'Nueva orden'}
+        </h3>
 
         <form onSubmit={enviarFormulario} noValidate>
           <div className="row g-3">
@@ -353,7 +340,7 @@ function OrdenesProduccion() {
 
             <div className="col-12 col-md-6">
               <label htmlFor="estado" className="form-label">
-                Estado inicial
+                Estado
               </label>
               <select
                 id="estado"
@@ -391,17 +378,29 @@ function OrdenesProduccion() {
             </div>
           </div>
 
-          <button
-            type="submit"
-            className="btn mt-4"
-            disabled={Boolean(datos.error)}
-            style={{
-              backgroundColor: 'var(--cafe-oscuro)',
-              color: 'var(--blanco)',
-            }}
-          >
-            Guardar orden
-          </button>
+          <div className="d-flex flex-wrap gap-2 mt-4">
+            <button
+              type="submit"
+              className="btn"
+              disabled={Boolean(datos.error)}
+              style={{
+                backgroundColor: 'var(--cafe-oscuro)',
+                color: 'var(--blanco)',
+              }}
+            >
+              {editando ? 'Guardar cambios' : 'Guardar orden'}
+            </button>
+
+            {editando && (
+              <button
+                type="button"
+                className="btn btn-outline-secondary"
+                onClick={cancelarEdicion}
+              >
+                Cancelar edición
+              </button>
+            )}
+          </div>
         </form>
 
         <hr className="my-4" />
@@ -443,14 +442,24 @@ function OrdenesProduccion() {
                     <td>{orden.estado}</td>
                     <td>{orden.prioridad}</td>
                     <td>
-                      <button
-                        type="button"
-                        className="btn btn-outline-danger btn-sm"
-                        aria-label={`Eliminar orden de ${orden.codigo}`}
-                        onClick={() => borrarOrden(orden)}
-                      >
-                        Eliminar
-                      </button>
+                      <div className="d-flex gap-2">
+                        <button
+                          type="button"
+                          className="btn btn-outline-secondary btn-sm"
+                          aria-label={`Editar orden de ${orden.codigo}`}
+                          onClick={() => editarOrden(orden)}
+                        >
+                          Editar
+                        </button>
+                        <button
+                          type="button"
+                          className="btn btn-outline-danger btn-sm"
+                          aria-label={`Eliminar orden de ${orden.codigo}`}
+                          onClick={() => borrarOrden(orden)}
+                        >
+                          Eliminar
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}
