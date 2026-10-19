@@ -25,3 +25,19 @@ body {
   margin: 0;
   font-size: 1.8rem;
 }
+
+.main-nav {
+  background-color: var(--cafe-oscuro);
+}
+
+.main-nav .nav-link {
+  color: var(--blanco);
+  padding: 15px 20px;
+  font-weight: bold;
+}
+
+.main-nav .nav-link:hover,
+.main-nav .nav-link.active {
+  background-color: var(--corteza-cobre);
+  color: var(--blanco);
+}
