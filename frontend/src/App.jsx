@@ -4,6 +4,7 @@ import Navbar from './components/Navbar.jsx'
 import OrdenesProduccion from './pages/OrdenesProduccion.jsx'
 import ControlCalidad from './pages/ControlCalidad.jsx'
 import ProductosIngredientes from './pages/ProductosIngredientes.jsx'
+import Trazabilidad from './pages/Trazabilidad.jsx'
 
 function App() {
   return (
@@ -36,7 +37,7 @@ function App() {
           />
           <Route
             path="/trazabilidad"
-            element={<h2>Trazabilidad</h2>}
+            element={<Trazabilidad />}
           />
           <Route
             path="/reportes"
