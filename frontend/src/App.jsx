@@ -2,6 +2,7 @@ import { Routes, Route } from 'react-router-dom'
 import Header from './components/Header.jsx'
 import Navbar from './components/Navbar.jsx'
 import OrdenesProduccion from './pages/OrdenesProduccion.jsx'
+import ControlCalidad from './pages/ControlCalidad.jsx'
 
 function App() {
   return (
@@ -30,7 +31,7 @@ function App() {
           />
           <Route
             path="/calidad"
-            element={<h2>Control de calidad</h2>}
+            element={<ControlCalidad />}
           />
           <Route
             path="/trazabilidad"
