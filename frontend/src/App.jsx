@@ -5,6 +5,7 @@ import OrdenesProduccion from './pages/OrdenesProduccion.jsx'
 import ControlCalidad from './pages/ControlCalidad.jsx'
 import ProductosIngredientes from './pages/ProductosIngredientes.jsx'
 import Trazabilidad from './pages/Trazabilidad.jsx'
+import Reportes from './pages/Reportes.jsx'
 
 function App() {
   return (
@@ -41,7 +42,7 @@ function App() {
           />
           <Route
             path="/reportes"
-            element={<h2>Reportes</h2>}
+            element={<Reportes />}
           />
           <Route
             path="*"
