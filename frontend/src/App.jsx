@@ -3,6 +3,7 @@ import Header from './components/Header.jsx'
 import Navbar from './components/Navbar.jsx'
 import OrdenesProduccion from './pages/OrdenesProduccion.jsx'
 import ControlCalidad from './pages/ControlCalidad.jsx'
+import ProductosIngredientes from './pages/ProductosIngredientes.jsx'
 
 function App() {
   return (
@@ -23,7 +24,7 @@ function App() {
           />
           <Route
             path="/productos"
-            element={<h2>Productos e ingredientes</h2>}
+            element={<ProductosIngredientes />}
           />
           <Route
             path="/ordenes"
