@@ -1,6 +1,7 @@
 import { Routes, Route } from 'react-router-dom'
 import Header from './components/Header.jsx'
 import Navbar from './components/Navbar.jsx'
+import OrdenesProduccion from './pages/OrdenesProduccion.jsx'
 
 function App() {
   return (
@@ -25,7 +26,7 @@ function App() {
           />
           <Route
             path="/ordenes"
-            element={<h2>Órdenes de producción</h2>}
+            element={<OrdenesProduccion />}
           />
           <Route
             path="/calidad"
