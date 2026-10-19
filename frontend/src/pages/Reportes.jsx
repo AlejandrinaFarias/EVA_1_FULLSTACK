@@ -2,6 +2,10 @@ import { useState } from 'react'
 import { obtenerOrdenes } from '../data/ordenes.js'
 import { obtenerInspecciones } from '../data/inspecciones.js'
 import { obtenerCatalogo } from '../data/catalogo.js'
+import {
+  obtenerNombresProductos,
+  resolverNombreProducto,
+} from '../data/nombresProductos.js'
 
 const TIPOS = {
   ordenes: {
@@ -9,7 +13,7 @@ const TIPOS = {
     fecha: 'fechaProduccion',
     columnas: [
       ['codigo', 'Código'],
-      ['producto', 'Producto'],
+      ['productoNombre', 'Producto'],
       ['cantidad', 'Unidades programadas'],
       ['pesoUnidad', 'Peso por unidad (g)'],
       ['fechaProduccion', 'Fecha de producción'],
@@ -22,7 +26,7 @@ const TIPOS = {
     fecha: 'fechaInspeccion',
     columnas: [
       ['lote', 'Lote'],
-      ['producto', 'Producto'],
+      ['productoNombre', 'Producto'],
       ['fechaInspeccion', 'Fecha de inspección'],
       ['tecnico', 'Técnico'],
       ['resultado', 'Resultado'],
@@ -54,18 +58,38 @@ const TIPOS = {
 }
 
 function fechaLocal(fecha = new Date()) {
-  const anio = fecha.getFullYear()
-  const mes = String(fecha.getMonth() + 1).padStart(2, '0')
-  const dia = String(fecha.getDate()).padStart(2, '0')
-  return `${anio}-${mes}-${dia}`
+  return [
+    fecha.getFullYear(),
+    String(fecha.getMonth() + 1).padStart(2, '0'),
+    String(fecha.getDate()).padStart(2, '0'),
+  ].join('-')
 }
 
 function cargarDatos() {
+  const productos = obtenerNombresProductos()
+
+  function conNombre(registro) {
+    return {
+      ...registro,
+      productoNombre: resolverNombreProducto(registro, productos),
+    }
+  }
+
   return {
-    ordenes: obtenerOrdenes(),
-    inspecciones: obtenerInspecciones(),
+    ordenes: obtenerOrdenes().map(conNombre),
+    inspecciones: obtenerInspecciones().map((registro) => ({
+      ...conNombre(registro),
+      resultado: registro.resultado === 'No_conforme'
+        ? 'No conforme'
+        : registro.resultado,
+    })),
     productos: obtenerCatalogo('productos'),
-    ingredientes: obtenerCatalogo('ingredientes'),
+    ingredientes: obtenerCatalogo('ingredientes').map((registro) => ({
+      ...registro,
+      estadoStock: registro.stock < registro.minimo
+        ? 'Bajo stock'
+        : 'OK',
+    })),
   }
 }
 
@@ -83,7 +107,7 @@ function cargarInicial() {
 function celdaCSV(valor) {
   let texto = String(valor ?? '')
 
-  if (/^[\s]*[=+\-@]/.test(texto)) {
+  if (/^\s*[=+\-@]/.test(texto)) {
     texto = `'${texto}`
   }
 
@@ -106,26 +130,30 @@ function Reportes() {
   const datos = fuente.datos
   const usaFechas = Boolean(TIPOS[tipo].fecha)
 
-  const unidadesProgramadas = datos
-    ? datos.ordenes.reduce(
+  const indicadores = datos ? [
+    ['Órdenes registradas', datos.ordenes.length],
+    [
+      'Unidades programadas',
+      datos.ordenes.reduce(
         (total, orden) => total + Number(orden.cantidad),
         0,
-      )
-    : 0
+      ),
+    ],
+    [
+      'Inspecciones no conformes',
+      datos.inspecciones.filter(
+        (registro) => registro.resultado === 'No conforme',
+      ).length,
+    ],
+    [
+      'Ingredientes bajo stock',
+      datos.ingredientes.filter(
+        (registro) => registro.stock < registro.minimo,
+      ).length,
+    ],
+  ] : []
 
-  const noConformes = datos
-    ? datos.inspecciones.filter(
-        (inspeccion) => inspeccion.resultado === 'No_conforme',
-      ).length
-    : 0
-
-  const bajoStock = datos
-    ? datos.ingredientes.filter(
-        (ingrediente) => ingrediente.stock < ingrediente.minimo,
-      ).length
-    : 0
-
-  function cambiarFiltros() {
+  function limpiarReporte() {
     setReporte(null)
     setErrores({})
     setMensaje('')
@@ -133,19 +161,14 @@ function Reportes() {
 
   function generar(evento) {
     evento.preventDefault()
-    setMensaje('')
     setReporte(null)
+    setMensaje('')
 
     const nuevosErrores = {}
 
     if (usaFechas) {
-      if (!inicio) {
-        nuevosErrores.inicio = 'Selecciona una fecha.'
-      }
-
-      if (!fin) {
-        nuevosErrores.fin = 'Selecciona una fecha.'
-      }
+      if (!inicio) nuevosErrores.inicio = 'Selecciona una fecha.'
+      if (!fin) nuevosErrores.fin = 'Selecciona una fecha.'
 
       if (inicio && fin && inicio > fin) {
         nuevosErrores.fin = 'Debe ser igual o posterior al inicio.'
@@ -160,34 +183,21 @@ function Reportes() {
 
     try {
       const actuales = cargarDatos()
-      setFuente({ datos: actuales, error: '' })
-
       const configuracion = TIPOS[tipo]
-      let filas = actuales[tipo]
 
-      if (configuracion.fecha) {
-        filas = filas.filter((fila) => {
-          const fecha = fila[configuracion.fecha]
-          return fecha >= inicio && fecha <= fin
-        })
-      }
+      const filas = actuales[tipo].filter((registro) => {
+        if (!configuracion.fecha) return true
+        const fecha = registro[configuracion.fecha]
+        return fecha >= inicio && fecha <= fin
+      })
 
-      filas = filas.map((fila) => ({
-        ...fila,
-        resultado: fila.resultado === 'No_conforme'
-          ? 'No conforme'
-          : fila.resultado,
-        estadoStock: tipo === 'ingredientes'
-          ? fila.stock < fila.minimo ? 'Bajo stock' : 'OK'
-          : '',
-      }))
-
+      setFuente({ datos: actuales, error: '' })
       setReporte({
         tipo,
         titulo: configuracion.titulo,
         columnas: configuracion.columnas,
         filas,
-        periodo: configuracion.fecha
+        periodo: usaFechas
           ? `${inicio} al ${fin}`
           : 'Existencias actuales, sin filtro de fechas',
         generado: new Date().toLocaleString('es-CL'),
@@ -195,22 +205,20 @@ function Reportes() {
     } catch {
       setFuente({
         datos: null,
-        error: 'No se pudieron leer los datos. Revisa el almacenamiento.',
+        error: 'No se pudieron consultar los datos guardados.',
       })
     }
   }
 
   function descargar() {
-    if (!reporte || reporte.filas.length === 0) {
-      return
-    }
+    if (!reporte?.filas.length) return
 
     const lineas = [
       reporte.columnas.map(([, titulo]) => celdaCSV(titulo)).join(';'),
-      ...reporte.filas.map((fila) =>
-        reporte.columnas
-          .map(([campo]) => celdaCSV(fila[campo]))
-          .join(';'),
+      ...reporte.filas.map((registro) =>
+        reporte.columnas.map(
+          ([campo]) => celdaCSV(registro[campo]),
+        ).join(';'),
       ),
     ]
 
@@ -235,7 +243,7 @@ function Reportes() {
     <section className="card border-0 shadow-sm">
       <div className="card-body p-4">
         <h2>Reportes</h2>
-        <p>Consulta los registros y descarga la información de Pan del Sur.</p>
+        <p>Consulta y descarga los registros de Pan del Sur.</p>
 
         {fuente.error && (
           <div className="alert alert-danger" role="alert">
@@ -246,129 +254,103 @@ function Reportes() {
         {datos && (
           <>
             <h3 className="h5 mt-4">Resumen general actual</h3>
-
-            <div className="row g-3 mb-4">
-              {[
-                ['Órdenes registradas', datos.ordenes.length],
-                ['Unidades programadas', unidadesProgramadas],
-                ['Inspecciones no conformes', noConformes],
-                ['Ingredientes bajo stock', bajoStock],
-              ].map(([titulo, valor]) => (
+            <div className="row g-3 mb-3">
+              {indicadores.map(([titulo, valor]) => (
                 <div className="col-12 col-sm-6 col-xl-3" key={titulo}>
                   <div
                     className="rounded p-3 h-100"
                     style={{ backgroundColor: 'var(--bg-pan)' }}
                   >
-                    <p className="h3 mb-1">
-                      {valor.toLocaleString('es-CL')}
-                    </p>
+                    <p className="h3">{valor.toLocaleString('es-CL')}</p>
                     <p className="small mb-0">{titulo}</p>
                   </div>
                 </div>
               ))}
             </div>
-
             <p className="small">
-              El resumen considera todos los registros guardados.
+              El resumen considera todos los registros.
               Las unidades programadas no representan producción terminada.
             </p>
           </>
         )}
 
         <hr className="my-4" />
-
         <h3 className="h5">Generar reporte</h3>
 
         <form onSubmit={generar} noValidate>
-          <div className="row g-3">
-            <div className="col-12">
-              <label htmlFor="tipo-reporte" className="form-label">
-                Tipo de reporte
-              </label>
-              <select
-                id="tipo-reporte"
-                className="form-select"
-                value={tipo}
-                onChange={(evento) => {
-                  setTipo(evento.target.value)
-                  cambiarFiltros()
-                }}
-              >
-                {Object.entries(TIPOS).map(([clave, configuracion]) => (
-                  <option key={clave} value={clave}>
-                    {configuracion.titulo}
-                  </option>
+          <label htmlFor="tipo-reporte" className="form-label">
+            Tipo de reporte
+          </label>
+          <select
+            id="tipo-reporte"
+            className="form-select"
+            value={tipo}
+            onChange={(evento) => {
+              setTipo(evento.target.value)
+              limpiarReporte()
+            }}
+          >
+            {Object.entries(TIPOS).map(([clave, configuracion]) => (
+              <option key={clave} value={clave}>
+                {configuracion.titulo}
+              </option>
+            ))}
+          </select>
+
+          {usaFechas ? (
+            <>
+              <div className="row g-3 mt-1">
+                {[
+                  ['inicio', 'Fecha de inicio', inicio, setInicio],
+                  ['fin', 'Fecha de término', fin, setFin],
+                ].map(([nombre, titulo, valor, actualizar]) => (
+                  <div className="col-12 col-md-6" key={nombre}>
+                    <label htmlFor={nombre} className="form-label">
+                      {titulo}
+                    </label>
+                    <input
+                      id={nombre}
+                      type="date"
+                      className={`form-control${
+                        errores[nombre] ? ' is-invalid' : ''
+                      }`}
+                      value={valor}
+                      required
+                      aria-invalid={Boolean(errores[nombre])}
+                      aria-describedby={
+                        errores[nombre] ? `error-${nombre}` : undefined
+                      }
+                      onChange={(evento) => {
+                        actualizar(evento.target.value)
+                        limpiarReporte()
+                      }}
+                    />
+                    {errores[nombre] && (
+                      <div
+                        id={`error-${nombre}`}
+                        className="invalid-feedback"
+                      >
+                        {errores[nombre]}
+                      </div>
+                    )}
+                  </div>
                 ))}
-              </select>
-            </div>
-
-            {usaFechas ? (
-              <>
-                <div className="col-12 col-md-6">
-                  <label htmlFor="fecha-inicio" className="form-label">
-                    Fecha de inicio
-                  </label>
-                  <input
-                    id="fecha-inicio"
-                    type="date"
-                    className={`form-control${errores.inicio ? ' is-invalid' : ''}`}
-                    value={inicio}
-                    required
-                    aria-invalid={Boolean(errores.inicio)}
-                    aria-describedby={errores.inicio ? 'error-inicio' : undefined}
-                    onChange={(evento) => {
-                      setInicio(evento.target.value)
-                      cambiarFiltros()
-                    }}
-                  />
-                  {errores.inicio && (
-                    <div id="error-inicio" className="invalid-feedback">
-                      {errores.inicio}
-                    </div>
-                  )}
-                </div>
-
-                <div className="col-12 col-md-6">
-                  <label htmlFor="fecha-fin" className="form-label">
-                    Fecha de término
-                  </label>
-                  <input
-                    id="fecha-fin"
-                    type="date"
-                    className={`form-control${errores.fin ? ' is-invalid' : ''}`}
-                    value={fin}
-                    required
-                    aria-invalid={Boolean(errores.fin)}
-                    aria-describedby={errores.fin ? 'error-fin' : undefined}
-                    onChange={(evento) => {
-                      setFin(evento.target.value)
-                      cambiarFiltros()
-                    }}
-                  />
-                  {errores.fin && (
-                    <div id="error-fin" className="invalid-feedback">
-                      {errores.fin}
-                    </div>
-                  )}
-                </div>
-
-                <p className="small mb-0">
-                  {tipo === 'ordenes'
-                    ? 'Se filtra por fecha de producción.'
-                    : 'Se filtra por fecha de inspección.'}
-                </p>
-              </>
-            ) : (
-              <p className="small mb-0">
-                Este reporte muestra las existencias actuales.
-                No hay historial de stock por fecha.
+              </div>
+              <p className="small mt-2">
+                {tipo === 'ordenes'
+                  ? 'Filtro por fecha de producción.'
+                  : 'Filtro por fecha de inspección.'}
               </p>
-            )}
-          </div>
+            </>
+          ) : (
+            <p className="small mt-2">
+              Existencias actuales. No hay historial de stock por fecha.
+            </p>
+          )}
 
           <button
             type="submit"
-            className="btn mt-4"
+            className="btn mt-2"
             style={{
               backgroundColor: 'var(--cafe-oscuro)',
               color: 'var(--blanco)',
@@ -409,10 +391,10 @@ function Reportes() {
                       </tr>
                     </thead>
                     <tbody>
-                      {reporte.filas.map((fila) => (
-                        <tr key={fila.id}>
+                      {reporte.filas.map((registro) => (
+                        <tr key={registro.id}>
                           {reporte.columnas.map(([campo]) => (
-                            <td key={campo}>{fila[campo] ?? ''}</td>
+                            <td key={campo}>{registro[campo] ?? ''}</td>
                           ))}
                         </tr>
                       ))}
@@ -425,9 +407,7 @@ function Reportes() {
         )}
 
         {mensaje && (
-          <p className="text-success mt-3" role="status">
-            {mensaje}
-          </p>
+          <p className="text-success mt-3" role="status">{mensaje}</p>
         )}
       </div>
     </section>

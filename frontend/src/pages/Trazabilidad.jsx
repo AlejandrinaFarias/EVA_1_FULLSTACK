@@ -1,27 +1,14 @@
 import { useState } from 'react'
 import { LOTES } from '../data/lotes.js'
 import { obtenerInspecciones } from '../data/inspecciones.js'
-import { PRODUCTOS_POR_CATEGORIA } from '../data/validacionOrdenes.js'
-
-const PRODUCTOS = Object.values(PRODUCTOS_POR_CATEGORIA).flat()
-
-const ETIQUETAS = {
-  dorado_uniforme: 'Dorado uniforme',
-  palido: 'Pálido',
-  quemado: 'Quemado',
-  disparejo: 'Disparejo',
-  esponjoso: 'Esponjoso',
-  duro: 'Duro',
-  seco: 'Seco',
-  gomoso: 'Gomoso',
-  compacto: 'Compacto',
-  caracteristico: 'Característico',
-  acido: 'Ácido',
-  amargo: 'Amargo',
-  insipido: 'Insípido',
-  salado: 'Demasiado salado',
-  rancio: 'Rancio',
-}
+import {
+  obtenerNombresProductos,
+  resolverNombreProducto,
+} from '../data/nombresProductos.js'
+import {
+  OPCIONES_CALIDAD,
+  evaluarCalidad,
+} from '../data/validacionCalidad.js'
 
 function Tabla({ columnas, filas, descripcion }) {
   return (
@@ -30,20 +17,16 @@ function Tabla({ columnas, filas, descripcion }) {
         <caption>{descripcion}</caption>
         <thead>
           <tr>
-            {columnas.map((columna) => (
-              <th scope="col" key={columna.clave}>
-                {columna.titulo}
-              </th>
+            {columnas.map(([campo, titulo]) => (
+              <th scope="col" key={campo}>{titulo}</th>
             ))}
           </tr>
         </thead>
         <tbody>
           {filas.map((fila, indice) => (
             <tr key={fila.id ?? fila.codigo ?? fila.pedido ?? indice}>
-              {columnas.map((columna) => (
-                <td key={columna.clave}>
-                  {fila[columna.clave]}
-                </td>
+              {columnas.map(([campo]) => (
+                <td key={campo}>{fila[campo]}</td>
               ))}
             </tr>
           ))}
@@ -53,88 +36,72 @@ function Tabla({ columnas, filas, descripcion }) {
   )
 }
 
+const COLUMNAS_CALIDAD = [
+  ['parametro', 'Parámetro'],
+  ['rango', 'Rango aceptable'],
+  ['valor', 'Valor registrado'],
+  ['resultado', 'Evaluación'],
+]
+
 function FichaInspeccion({ inspeccion }) {
+  const estados = evaluarCalidad(inspeccion)
   const filas = []
 
-  if (
-    inspeccion.pesoEspecificado !== '' &&
-    inspeccion.pesoRegistrado !== '' &&
-    inspeccion.pesoEspecificado != null &&
-    inspeccion.pesoRegistrado != null
-  ) {
-    const esperado = Number(inspeccion.pesoEspecificado)
-    const medido = Number(inspeccion.pesoRegistrado)
-    const cumple =
-      esperado > 0 &&
-      Math.abs(medido - esperado) / esperado <= 0.05
-
+  if (estados.peso !== undefined) {
     filas.push({
       parametro: 'Peso',
-      rango: `${esperado} g ±5 %`,
-      valor: `${medido} g`,
-      resultado: cumple ? 'Cumple' : 'No cumple',
+      rango: `${inspeccion.pesoEspecificado} g ±5 %`,
+      valor: `${inspeccion.pesoRegistrado} g`,
+      resultado: estados.peso ? 'Cumple' : 'No cumple',
     })
   }
 
-  if (inspeccion.humedad !== '' && inspeccion.humedad != null) {
-    const humedad = Number(inspeccion.humedad)
-
+  if (estados.humedad !== undefined) {
     filas.push({
       parametro: 'Humedad',
       rango: '35 a 40 %',
-      valor: `${humedad} %`,
-      resultado:
-        humedad >= 35 && humedad <= 40 ? 'Cumple' : 'No cumple',
+      valor: `${inspeccion.humedad} %`,
+      resultado: estados.humedad ? 'Cumple' : 'No cumple',
     })
   }
 
-  for (const [campo, titulo, aceptable] of [
-    ['color', 'Color de corteza', 'dorado_uniforme'],
-    ['textura', 'Textura', 'esponjoso'],
-    ['sabor', 'Sabor', 'caracteristico'],
+  for (const [campo, titulo] of [
+    ['color', 'Color de corteza'],
+    ['textura', 'Textura'],
+    ['sabor', 'Sabor'],
   ]) {
     if (inspeccion[campo]) {
       filas.push({
         parametro: titulo,
-        rango: ETIQUETAS[aceptable],
-        valor: ETIQUETAS[inspeccion[campo]] ?? inspeccion[campo],
-        resultado:
-          inspeccion[campo] === aceptable ? 'Cumple' : 'No cumple',
+        rango: OPCIONES_CALIDAD[campo][0][1],
+        valor: OPCIONES_CALIDAD[campo].find(
+          ([valor]) => valor === inspeccion[campo],
+        )?.[1] ?? inspeccion[campo],
+        resultado: estados[campo] ? 'Cumple' : 'No cumple',
       })
     }
   }
 
   return (
     <article className="border rounded p-3 mb-3">
-      <div className="d-flex flex-wrap justify-content-between gap-2">
-        <h4 className="h6">Inspección: {inspeccion.fechaInspeccion}</h4>
-        <span
-          className={`badge ${
-            inspeccion.resultado === 'Conforme'
-              ? 'text-bg-success'
-              : 'text-bg-danger'
-          }`}
-        >
+      <h5 className="h6">
+        {inspeccion.fechaInspeccion} — {inspeccion.nombreVisible}
+      </h5>
+
+      <p className="mb-1">Técnico: {inspeccion.tecnico}</p>
+      <p>
+        <strong>
           {inspeccion.resultado === 'Conforme'
             ? 'Conforme'
             : 'No conforme'}
-        </span>
-      </div>
+        </strong>
+      </p>
 
-      <p className="small">Técnico: {inspeccion.tecnico}</p>
-
-      {filas.length > 0 && (
-        <Tabla
-          columnas={[
-            { clave: 'parametro', titulo: 'Parámetro' },
-            { clave: 'rango', titulo: 'Rango aceptable' },
-            { clave: 'valor', titulo: 'Valor registrado' },
-            { clave: 'resultado', titulo: 'Evaluación' },
-          ]}
-          filas={filas}
-          descripcion="Parámetros de la inspección guardada."
-        />
-      )}
+      <Tabla
+        columnas={COLUMNAS_CALIDAD}
+        filas={filas}
+        descripcion="Parámetros de la inspección guardada."
+      />
 
       <p className="mb-0">
         <strong>Observaciones: </strong>
@@ -162,7 +129,12 @@ function Trazabilidad() {
     }
 
     try {
-      const inspecciones = obtenerInspecciones()
+      const productos = obtenerNombresProductos()
+
+      const inspecciones = obtenerInspecciones().map((registro) => ({
+        ...registro,
+        nombreVisible: resolverNombreProducto(registro, productos),
+      }))
 
       const lotesEncontrados = LOTES.filter(
         (lote) =>
@@ -170,32 +142,29 @@ function Trazabilidad() {
           lote.insumos.some((insumo) => insumo.codigo === codigo),
       )
 
-      const inspeccionesDirectas = inspecciones.filter(
-        (inspeccion) =>
-          inspeccion.lote.trim().toUpperCase() === codigo,
-      )
-
       const codigos = new Set(
         lotesEncontrados.map((lote) => lote.codigo),
       )
 
-      if (inspeccionesDirectas.length > 0) {
+      if (
+        inspecciones.some(
+          (registro) => registro.lote.trim().toUpperCase() === codigo,
+        )
+      ) {
         codigos.add(codigo)
       }
 
-      const fichas = [...codigos].map((codigoLote) => {
-        const lote = LOTES.find((item) => item.codigo === codigoLote)
-
-        const controles = inspecciones.filter(
-          (inspeccion) =>
-            inspeccion.lote.trim().toUpperCase() === codigoLote,
+      const fichas = [...codigos].map((codigoLote) => ({
+        codigo: codigoLote,
+        lote: LOTES.find((lote) => lote.codigo === codigoLote),
+        controles: inspecciones.filter(
+          (registro) =>
+            registro.lote.trim().toUpperCase() === codigoLote,
         ).sort((a, b) =>
           b.fechaInspeccion.localeCompare(a.fechaInspeccion) ||
           String(b.fechaRegistro).localeCompare(String(a.fechaRegistro)),
-        )
-
-        return { codigo: codigoLote, lote, controles }
-      })
+        ),
+      }))
 
       setResultados(fichas)
 
@@ -203,7 +172,7 @@ function Trazabilidad() {
         setMensaje('No se encontraron registros para ese código.')
       }
     } catch {
-      setMensaje('No se pudieron consultar las inspecciones guardadas.')
+      setMensaje('No se pudieron consultar los datos guardados.')
     }
   }
 
@@ -224,12 +193,12 @@ function Trazabilidad() {
               type="search"
               className="form-control"
               value={consulta}
+              placeholder="Ejemplo: LOT-20261012-001"
               onChange={(evento) => {
                 setConsulta(evento.target.value)
                 setResultados([])
                 setMensaje('')
               }}
-              placeholder="Ejemplo: LOT-20261012-001"
             />
             <button
               type="submit"
@@ -244,8 +213,8 @@ function Trazabilidad() {
           </div>
 
           <p className="small mt-2">
-            También puedes buscar HAR-20260920-A o un lote que hayas
-            registrado en Control de calidad.
+            Busca un lote registrado en Calidad o el insumo
+            HAR-20260920-A del ejemplo original.
           </p>
         </form>
 
@@ -255,116 +224,92 @@ function Trazabilidad() {
           </div>
         )}
 
-        {resultados.map(({ codigo, lote, controles }) => {
-          const productosInspeccionados = [
-            ...new Set(
-              controles.map((control) =>
-                PRODUCTOS.find(
-                  (producto) => producto.valor === control.producto,
-                )?.texto ?? control.producto,
-              ),
-            ),
-          ]
+        {resultados.map(({ codigo, lote, controles }) => (
+          <article className="border rounded p-3 mb-4" key={codigo}>
+            <h3 className="h5">Ficha del lote: {codigo}</h3>
 
-          return (
-            <article className="border rounded p-3 mb-4" key={codigo}>
-              <h3 className="h5">Ficha del lote: {codigo}</h3>
-
-              {lote ? (
-                <div className="rounded p-3 mb-3"
-                  style={{ backgroundColor: 'var(--bg-pan)' }}
-                >
-                  <p className="mb-1">
-                    <strong>Producto: </strong>{lote.producto}
-                  </p>
-                  <p className="mb-1">
-                    <strong>Cantidad: </strong>
-                    {lote.cantidad.toLocaleString('es-CL')} unidades
-                  </p>
-                  <p className="mb-1">
-                    <strong>Elaboración: </strong>
-                    {lote.elaboracion} — {lote.linea}
-                  </p>
-                  <p className="small mb-0">
-                    Datos de ejemplo conservados de la primera evaluación.
-                  </p>
-                </div>
-              ) : (
-                <p>
-                  <strong>Productos inspeccionados: </strong>
-                  {productosInspeccionados.join(', ')}
+            {lote && (
+              <div
+                className="rounded p-3 my-3"
+                style={{ backgroundColor: 'var(--bg-pan)' }}
+              >
+                <p className="mb-1">
+                  <strong>Producto original: </strong>{lote.producto}
                 </p>
-              )}
-
-              <h4 className="h6 mt-4">1. Insumos utilizados</h4>
-
-              {lote ? (
-                <Tabla
-                  columnas={[
-                    { clave: 'nombre', titulo: 'Insumo' },
-                    { clave: 'codigo', titulo: 'Lote de insumo' },
-                    { clave: 'proveedor', titulo: 'Proveedor' },
-                    { clave: 'cantidad', titulo: 'Cantidad usada' },
-                    { clave: 'vencimiento', titulo: 'Vencimiento' },
-                  ]}
-                  filas={lote.insumos}
-                  descripcion="Insumos del lote de ejemplo original."
-                />
-              ) : (
-                <p>No hay insumos vinculados a este lote.</p>
-              )}
-
-              <h4 className="h6 mt-4">2. Control de calidad</h4>
-
-              {controles.length > 0 ? (
-                controles.map((inspeccion) => (
-                  <FichaInspeccion
-                    key={inspeccion.id}
-                    inspeccion={inspeccion}
-                  />
-                ))
-              ) : lote ? (
-                <>
-                  <p className="small">
-                    Sin inspecciones guardadas. Se muestran los controles
-                    de ejemplo originales.
-                  </p>
-                  <Tabla
-                    columnas={[
-                      { clave: 'parametro', titulo: 'Parámetro' },
-                      { clave: 'rango', titulo: 'Rango aceptable' },
-                      { clave: 'valor', titulo: 'Valor registrado' },
-                      { clave: 'resultado', titulo: 'Evaluación' },
-                    ]}
-                    filas={lote.controlesEjemplo}
-                    descripcion="Controles de ejemplo de la primera evaluación."
-                  />
-                </>
-              ) : (
-                <p>No hay inspecciones guardadas.</p>
-              )}
-
-              <h4 className="h6 mt-4">3. Distribución a clientes</h4>
-
-              {lote ? (
-                <Tabla
-                  columnas={[
-                    { clave: 'cliente', titulo: 'Cliente' },
-                    { clave: 'pedido', titulo: 'Pedido / guía' },
-                    { clave: 'cantidad', titulo: 'Unidades' },
-                    { clave: 'despacho', titulo: 'Despacho' },
-                  ]}
-                  filas={lote.distribucion}
-                  descripcion="Distribución del lote de ejemplo original."
-                />
-              ) : (
-                <p className="mb-0">
-                  No hay despachos vinculados a este lote.
+                <p className="mb-1">
+                  <strong>Cantidad: </strong>
+                  {lote.cantidad.toLocaleString('es-CL')} unidades
                 </p>
-              )}
-            </article>
-          )
-        })}
+                <p className="mb-1">
+                  {lote.elaboracion} — {lote.linea}
+                </p>
+                <p className="small mb-0">
+                  Datos de ejemplo de la primera evaluación.
+                </p>
+              </div>
+            )}
+
+            <h4 className="h6 mt-4">1. Insumos utilizados</h4>
+
+            {lote ? (
+              <Tabla
+                columnas={[
+                  ['nombre', 'Insumo'],
+                  ['codigo', 'Lote de insumo'],
+                  ['proveedor', 'Proveedor'],
+                  ['cantidad', 'Cantidad usada'],
+                  ['vencimiento', 'Vencimiento'],
+                ]}
+                filas={lote.insumos}
+                descripcion="Insumos del lote de ejemplo original."
+              />
+            ) : (
+              <p>No hay insumos vinculados a este lote.</p>
+            )}
+
+            <h4 className="h6 mt-4">2. Control de calidad</h4>
+
+            {controles.length > 0 ? (
+              controles.map((inspeccion) => (
+                <FichaInspeccion
+                  key={inspeccion.id}
+                  inspeccion={inspeccion}
+                />
+              ))
+            ) : lote ? (
+              <>
+                <p className="small">
+                  Sin inspecciones guardadas. Se muestran los
+                  controles de ejemplo originales.
+                </p>
+                <Tabla
+                  columnas={COLUMNAS_CALIDAD}
+                  filas={lote.controlesEjemplo}
+                  descripcion="Controles de ejemplo originales."
+                />
+              </>
+            ) : (
+              <p>No hay inspecciones guardadas.</p>
+            )}
+
+            <h4 className="h6 mt-4">3. Distribución a clientes</h4>
+
+            {lote ? (
+              <Tabla
+                columnas={[
+                  ['cliente', 'Cliente'],
+                  ['pedido', 'Pedido / guía'],
+                  ['cantidad', 'Unidades'],
+                  ['despacho', 'Despacho'],
+                ]}
+                filas={lote.distribucion}
+                descripcion="Distribución del lote de ejemplo original."
+              />
+            ) : (
+              <p>No hay despachos vinculados a este lote.</p>
+            )}
+          </article>
+        ))}
       </div>
     </section>
   )
