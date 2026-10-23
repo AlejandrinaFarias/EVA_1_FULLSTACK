@@ -1,0 +1,43 @@
+:root {
+  --bg-pan: #ffe9d6;
+  --corteza-cobre: #faa070;
+  --cafe-oscuro: #ce5346;
+  --exito-trigo: #C9A227;
+  --progreso-canela: #A9744F;
+  --alerta-nuez: #5C4033;
+  --blanco: #FFFFFF;
+}
+
+body {
+  margin: 0;
+  background-color: var(--bg-pan);
+  color: var(--cafe-oscuro);
+  font-family: system-ui, -apple-system, sans-serif;
+}
+
+.main-header {
+  background-color: var(--corteza-cobre);
+  color: var(--blanco);
+  text-align: center;
+}
+
+.main-header h1 {
+  margin: 0;
+  font-size: 1.8rem;
+}
+
+.main-nav {
+  background-color: var(--cafe-oscuro);
+}
+
+.main-nav .nav-link {
+  color: var(--blanco);
+  padding: 15px 20px;
+  font-weight: bold;
+}
+
+.main-nav .nav-link:hover,
+.main-nav .nav-link.active {
+  background-color: var(--corteza-cobre);
+  color: var(--blanco);
+}
