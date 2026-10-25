@@ -7,12 +7,6 @@
 - Validaciones en ambos formularios organizadas en 3 niveles: sintácticas (formato y campos obligatorios), semánticas (fechas y números con sentido lógico) y de negocio (reglas propias de la panadería, como lote mínimo de 10 unidades o que una inspección no pueda marcarse "Conforme" si algún parámetro está fuera de rango).
 - Se mantiene el uso del stylesheet CSS creado anteriormente por Anthony, con agregados propios para estos dos formularios: clases .campo / .fila para el layout de los inputs, .grupo-parametro para encapsular cada parámetro de calidad, y .estado-parametro (.cumple / .no-cumple) para el feedback visual en vivo.
 
-
-
-
----
-# Melissa (o･ω･o)
----
 ## Archivos 
 - reportes.html -> Pagina de reportes con KPIs, generador pers. y ultimos lotes.
 - reportes.js -> validacion fechas, calculo dias del periodo y mostrar mensaje dinamico al generar reporte.
