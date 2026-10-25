@@ -3,7 +3,7 @@ import {
   obtenerCatalogo,
   guardarRegistro,
   eliminarRegistro,
-} from '../data/catalogo.js'
+} from '../services/catalogo.js'
 
 const CAMPOS_COMUNES = [
   { nombre: 'codigo', etiqueta: 'Código', tipo: 'text' },

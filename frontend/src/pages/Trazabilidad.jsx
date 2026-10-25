@@ -1,14 +1,14 @@
 import { useState } from 'react'
-import { LOTES } from '../data/lotes.js'
-import { obtenerInspecciones } from '../data/inspecciones.js'
+import { LOTES } from '../services/lotes.js'
+import { obtenerInspecciones } from '../services/inspecciones.js'
 import {
   obtenerNombresProductos,
   resolverNombreProducto,
-} from '../data/nombresProductos.js'
+} from '../services/nombresProductos.js'
 import {
   OPCIONES_CALIDAD,
   evaluarCalidad,
-} from '../data/validacionCalidad.js'
+} from '../services/validacionCalidad.js'
 
 function Tabla({ columnas, filas, descripcion }) {
   return (

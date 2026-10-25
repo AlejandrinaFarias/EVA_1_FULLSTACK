@@ -4,16 +4,16 @@ import {
   crearOrden,
   actualizarOrden,
   eliminarOrden,
-} from '../data/ordenes.js'
+} from '../services/ordenes.js'
 import {
   FORMULARIO_INICIAL,
   validarOrden,
   PRODUCTOS_POR_CATEGORIA,
-} from '../data/validacionOrdenes.js'
+} from '../services/validacionOrdenes.js'
 import {
   obtenerProductosDisponibles,
   agruparProductos,
-} from '../data/productosDisponibles.js'
+} from '../services/productosDisponibles.js'
 
 const CAMPOS = [
   {

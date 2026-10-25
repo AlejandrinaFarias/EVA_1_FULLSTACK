@@ -1,11 +1,11 @@
 import { useState } from 'react'
-import { obtenerOrdenes } from '../data/ordenes.js'
-import { obtenerInspecciones } from '../data/inspecciones.js'
-import { obtenerCatalogo } from '../data/catalogo.js'
+import { obtenerOrdenes } from '../services/ordenes.js'
+import { obtenerInspecciones } from '../services/inspecciones.js'
+import { obtenerCatalogo } from '../services/catalogo.js'
 import {
   obtenerNombresProductos,
   resolverNombreProducto,
-} from '../data/nombresProductos.js'
+} from '../services/nombresProductos.js'
 
 const TIPOS = {
   ordenes: {

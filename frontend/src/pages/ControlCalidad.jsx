@@ -4,15 +4,15 @@ import {
   crearInspeccion,
   actualizarInspeccion,
   eliminarInspeccion,
-} from '../data/inspecciones.js'
-import { obtenerProductosDisponibles } from '../data/productosDisponibles.js'
-import { PRODUCTOS_POR_CATEGORIA } from '../data/validacionOrdenes.js'
+} from '../services/inspecciones.js'
+import { obtenerProductosDisponibles } from '../services/productosDisponibles.js'
+import { PRODUCTOS_POR_CATEGORIA } from '../services/validacionOrdenes.js'
 import {
   INICIAL_CALIDAD,
   OPCIONES_CALIDAD,
   evaluarCalidad,
   validarCalidad,
-} from '../data/validacionCalidad.js'
+} from '../services/validacionCalidad.js'
 
 const CAMPOS_GENERALES = [
   ['lote', 'Código de lote', 'text'],
